@@ -76,7 +76,6 @@ class Guestbook(webapp2.RequestHandler):
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
 class Author(ndb.Model):
-    """Sub model for representing an author."""
     identity = ndb.StringProperty(indexed=False)
     email = ndb.StringProperty(indexed=False)
 
