@@ -5,7 +5,7 @@ from django.views.generic.edit import FormView
 from django import forms
 from google.appengine.api import users
 import time
-from guestbookapp.models import Greeting, Guestbook,guestbook_key, DEFAULT_GUESTBOOK_NAME
+from guestbookapp.models import Greeting, Guestbook, DEFAULT_GUESTBOOK_NAME
 
 import urllib
 
