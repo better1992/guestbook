@@ -65,7 +65,7 @@ class SignView(FormView):
 		guestbook_name = form.cleaned_data["guestbook_name"]
 		guestbook_query = Guestbook.query()
 		guestbooks = guestbook_query.fetch()
-		greeting = Greeting(parent=guestbook_key(guestbook_name))
+		greeting = Greeting()
 		guestbook = None
 		for temp in guestbooks:
 			if temp.name == guestbook_name:
