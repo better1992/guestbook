@@ -63,18 +63,15 @@ class SignView(FormView):
 	
     def add_greeting(self, form):
 		guestbook_name = form.cleaned_data["guestbook_name"]
-		guestbook_query = Guestbook.query()
-		guestbooks = guestbook_query.fetch()
+		guestbooks = Guestbook.query(Guestbook.name==guestbook_name).get()
 		greeting = Greeting()
-		guestbook = None
-		for temp in guestbooks:
-			if temp.name == guestbook_name:
-				guestbook = temp
-				break
-		if guestbook is None:
+			
+		if guestbooks is None:
 			guestbook = Guestbook()
 			guestbook.name = guestbook_name
 			guestbook.put()
+		else:
+			guestbook = guestbooks
     	
 		if users.get_current_user():
 			greeting.author = users.get_current_user()
