@@ -1,0 +1,10 @@
+{% load url from future %} 
+<form method="post" action="{% url 'sign' %}">
+{{ form.non_field_errors}}
+{% csrf_token %} {{form.non_field_errors}}
+
+{{form.guestbook_name.label}}		{{form.guestbook_name}}	{{form.guestbook_name.errors}} <br>
+{{form.greeting_message.label}}		{{form.greeting_message}}	{{form.greeting_message.errors}}<br>
+<input type="submit" value="Sign">
+</form>
+<a href="{% url 'main' %}"><input type='button' value="Back"/></a>

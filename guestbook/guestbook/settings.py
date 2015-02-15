@@ -10,9 +10,9 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-name = 'guestbook-engineapp'
-ROOT_PATH = os.path.dirname(__file__)
-TEMPLATE_DIRS = (os.path.join(ROOT_PATH.replace(name,"",1),"guestbook/templates"))
+
+ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
+TEMPLATE_DIRS = (os.path.join(ROOT_PATH,"templates"))
 # BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
