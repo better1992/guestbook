@@ -2,7 +2,9 @@ from django.shortcuts import render, render_to_response
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+from django.views.generic.edit import UpdateView
 from django import forms
+from google.appengine.ext import ndb
 from google.appengine.api import users
 import time
 from guestbookapp.models import Greeting, Guestbook,guestbook_key, DEFAULT_GUESTBOOK_NAME
@@ -19,7 +21,8 @@ class MainView(TemplateView):
 		#greetings_query = Greeting.query(ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
 		greetings_query = Greeting.query().order(-Greeting.date)
 		greetings = greetings_query.fetch(10)
-	
+		guestbooks = Guestbook.query().fetch()
+		
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.get_full_path())
 			url_linktext = 'Logout'
@@ -29,8 +32,11 @@ class MainView(TemplateView):
 
 		template_values = {
 			'greetings': greetings,
-			'url': url,
+			'guestbooks': guestbooks,
+			'url': url,		
 			'url_linktext': url_linktext,
+			'isAdmin' : users.is_current_user_admin(),
+			'currentUser' : users.get_current_user(),
 		}
 
 		return template_values;
@@ -49,32 +55,28 @@ class SignForm(forms.Form):
 		required=True,
 		widget=forms.Textarea()
 	)
-	
+	greeting_id = forms.CharField(max_length=2000, widget=forms.HiddenInput, required=False)
 
 class SignView(FormView):
     template_name = "greeting.html"
     form_class = SignForm
 	
     def form_valid(self, form):
-		
 		self.add_greeting(form)	
 		time.sleep(0.5)
 		return redirect("main")
 	
     def add_greeting(self, form):
 		guestbook_name = form.cleaned_data["guestbook_name"]
-		guestbook_query = Guestbook.query()
-		guestbooks = guestbook_query.fetch()
-		greeting = Greeting(parent=guestbook_key(guestbook_name))
-		guestbook = None
-		for temp in guestbooks:
-			if temp.name == guestbook_name:
-				guestbook = temp
-				break
-		if guestbook is None:
+		guestbooks = Guestbook.query(Guestbook.name==guestbook_name).get()
+		greeting = Greeting()
+			
+		if guestbooks is None:
 			guestbook = Guestbook()
 			guestbook.name = guestbook_name
 			guestbook.put()
+		else:
+			guestbook = guestbooks
     	
 		if users.get_current_user():
 			greeting.author = users.get_current_user()
@@ -82,5 +84,42 @@ class SignView(FormView):
 		greeting.content = form.cleaned_data["greeting_message"]
 		greeting.guestbook = guestbook
 		greeting.put()
-		
 	
+class GreetingEditView(FormView):
+    template_name = "edit.html"
+    form_class = SignForm
+    
+    def get_initial(self):
+		initial = super(GreetingEditView, self).get_initial()
+		
+		greeting_id = self.request.GET.get("id")
+		greeting = Greeting.query(Greeting.key==ndb.Key("Greeting", int(greeting_id))).get()
+		#greeting = greeting.filter(Greeting.key == ndb.Key("Greeting", greeting_id)).get()
+		
+		initial["guestbook_name"] = greeting.guestbook.name
+		initial["greeting_message"] = greeting.content
+		initial["greeting_id"] = int(greeting_id)
+		
+		return initial
+	
+    def form_valid(self, form):
+		self.edit_greeting(form)	
+		time.sleep(0.5)
+		return redirect('main')
+	
+    def edit_greeting(self, form):
+    	greeting_id = form.cleaned_data["greeting_id"]
+    	greeting_content = form.cleaned_data["greeting_message"]
+    	guestbook_name = form.cleaned_data["guestbook_name"]
+    	
+    	guestbook = Guestbook.query(Guestbook.name == guestbook_name).get()
+    	if guestbook is None:
+			guestbook = Guestbook()
+			guestbook.name = guestbook_name
+			guestbook.put()
+        greeting = Greeting.query(Greeting.key==ndb.Key("Greeting", int(greeting_id))).get()
+        greeting.content = greeting_content
+        greeting.guestbook = guestbook
+        greeting.put()
+
+

@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from django.core.urlresolvers import reverse
 
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
@@ -19,4 +20,5 @@ class Greeting(ndb.Model):
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
     guestbook = ndb.StructuredProperty(Guestbook)
+
 
