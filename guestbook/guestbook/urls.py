@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from guestbookapp.views import MainView,SignView
+from django.conf.urls.defaults import *
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'guestbook.views.home', name='home'),
