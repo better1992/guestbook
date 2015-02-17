@@ -6,8 +6,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'guestbook.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
 	url(r"^$", MainView.as_view(),name="main"),
-	url(r"^sign/$", SignView.as_view(),name="sign"),
+	url(r'^guestbook/', include('guestbook.urls')),
 	# url(r'^sign/$', sign_post),
 ) 
