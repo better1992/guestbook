@@ -1,8 +1,6 @@
 {% load url from future %}
 {% csrf_token %}
-{% for greeting in greetings %}
-  {{greeting.Key}} 
-  {{greeting.guestbook.name}} 
+{% for greeting in greetings %} 
   {% if greeting.author.nickname %} 
     {{ greeting.author }} wrote: 
   {% else %} An anonymous person wrote: 
@@ -11,4 +9,11 @@
   <br>
   {% endfor %}
 <a href="{% url 'sign' %}"><input type="button" value='Sign'/></a> </br>
+
+
+ <form>Guestbook name:
+      <input value="{{ guestbook_name }}" name="guestbook_name">
+      <input type="submit" value="switch">
+    </form>
+<br>
 <a href="{{ url }}">{{ url_linktext }}</a>
