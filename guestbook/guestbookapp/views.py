@@ -33,7 +33,6 @@ class MainView(TemplateView):
 
 		template_values = {
 			'greetings': greetings,
-			'guestbooks': guestbooks,
 			'url': url,		
 			'url_linktext': url_linktext,
 			'isAdmin' : users.is_current_user_admin(),
@@ -61,31 +60,31 @@ class SignForm(forms.Form):
 
 class SignView(FormView):
 
-    template_name = "greeting.html"
-	form_class = SignForm
-	def form_valid(self, form):
-		time.sleep(0.01)
-		return redirect("/?guestbook_name="+Greeting.put_from_dict(form.cleaned_data))
+		template_name = "greeting.html"
+		form_class = SignForm
+		def form_valid(self, form):
+			time.sleep(0.01)
+			return redirect("/?guestbook_name="+Greeting.put_from_dict(form.cleaned_data))
 	
    
 	
 class GreetingEditView(FormView):
-    template_name = "edit.html"
-    form_class = SignForm
-    
-    def get_initial(self):
+	template_name = "edit.html"
+	form_class = SignForm
+	
+	def get_initial(self):
 		initial = super(GreetingEditView, self).get_initial()
 		
 		greeting_id = self.request.GET.get("id")
-		greeting = Greeting.query(Greeting.key==ndb.Key("Greeting", int(greeting_id))).get()
-		
-		initial["guestbook_name"] = greeting.guestbook.name
-		initial["greeting_message"] = greeting.content
-		initial["greeting_id"] = int(greeting_id)
-		
+		guestbook_name = self.request.GET.get("guestbook_name")
+		if  guestbook_name: 
+			greeting = Greeting.get_greeting(guestbook_name,greeting_id)
+			initial["guestbook_name"] = guestbook_name
+			initial["greeting_message"] = greeting.content
+			initial["greeting_id"] = int(greeting_id)
 		return initial
 	
-    def form_valid(self, form):
+	def form_valid(self, form):
 		time.sleep(0.01)
 		return redirect("/?guestbook_name="+Greeting.edit_greeting(form.cleaned_data))
 	
