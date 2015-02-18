@@ -7,22 +7,29 @@ from django import forms
 from google.appengine.ext import ndb
 from google.appengine.api import users
 import time
-from guestbookapp.models import Greeting, Guestbook,guestbook_key, DEFAULT_GUESTBOOK_NAME
+from guestbookapp.models import Greeting, Guestbook, DEFAULT_GUESTBOOK_NAME
 
 import urllib
 
 
 
 class MainView(TemplateView):
-    template_name = "main_page.html"
-    
-    def get_context_data(self, **kwargs):
+	template_name = "main_page.html"
+	
+	def get_context_data(self, **kwargs):
 		guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
+<<<<<<< HEAD
 		#greetings_query = Greeting.query(ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
 		greetings_query = Greeting.query().order(-Greeting.date)
 		greetings = greetings_query.fetch(10)
 		guestbooks = Guestbook.query().fetch()
 		
+=======
+		greetings = Greeting.get_latest(guestbook_name, 10)
+		# greeting = Greeting()
+		# greetings = greeting.get_latest(guestbook_name,10)
+	
+>>>>>>> origin/feature/django-refactoring
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.get_full_path())
 			url_linktext = 'Logout'
@@ -35,8 +42,12 @@ class MainView(TemplateView):
 			'guestbooks': guestbooks,
 			'url': url,		
 			'url_linktext': url_linktext,
+<<<<<<< HEAD
 			'isAdmin' : users.is_current_user_admin(),
 			'currentUser' : users.get_current_user(),
+=======
+			'guestbook_name': guestbook_name
+>>>>>>> origin/feature/django-refactoring
 		}
 
 		return template_values;
@@ -58,6 +69,7 @@ class SignForm(forms.Form):
 	greeting_id = forms.CharField(max_length=2000, widget=forms.HiddenInput, required=False)
 
 class SignView(FormView):
+<<<<<<< HEAD
     template_name = "greeting.html"
     form_class = SignForm
 	
@@ -101,6 +113,13 @@ class GreetingEditView(FormView):
 		initial["greeting_id"] = int(greeting_id)
 		
 		return initial
+=======
+	template_name = "greeting.html"
+	form_class = SignForm
+	def form_valid(self, form):
+		time.sleep(0.01)
+		return redirect("/?guestbook_name="+Greeting.put_from_dict(form.cleaned_data))
+>>>>>>> origin/feature/django-refactoring
 	
     def form_valid(self, form):
 		self.edit_greeting(form)	
