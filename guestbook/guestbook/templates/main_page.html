@@ -13,14 +13,13 @@
   			<span><a href="{% url 'edit' %}?id={{greeting.key.id}}"><input  type="button" value='Edit'/></a>&nbsp;</span>
    		{% else %}
    			{% if currentUser = greeting.author %}
-   				<a href="{% url 'edit' %}?id={{greeting.key.id}}"><input  type="button" value='Edit'/></a>
+   				<a href="{% url 'edit' %}?id={{greeting.key.id}}&guestbook_name={{ guestbook_name}}"><input  type="button" value='Edit'/></a>
    			{% endif %}
    		{% endif %}
    	{% endif %}
 
   <br>
-  {% endif %}
-  {% endfor %}
+
   {% endfor %}
 <a href="{% url 'sign' %}"><input type="button" value='Sign'/></a> </br>
 
