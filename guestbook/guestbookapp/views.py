@@ -12,13 +12,13 @@ import urllib
 
 
 class MainView(TemplateView):
-    template_name = "main_page.html"
-    
-    def get_context_data(self, **kwargs):
+	template_name = "main_page.html"
+	
+	def get_context_data(self, **kwargs):
 		guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
-		#greetings_query = Greeting.query(ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-		greetings_query = Greeting.query().order(-Greeting.date)
-		greetings = greetings_query.fetch(10)
+		greetings = Greeting.get_latest(guestbook_name, 10)
+		# greeting = Greeting()
+		# greetings = greeting.get_latest(guestbook_name,10)
 	
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.get_full_path())
@@ -31,6 +31,7 @@ class MainView(TemplateView):
 			'greetings': greetings,
 			'url': url,
 			'url_linktext': url_linktext,
+			'guestbook_name': guestbook_name
 		}
 
 		return template_values;
@@ -52,32 +53,9 @@ class SignForm(forms.Form):
 	
 
 class SignView(FormView):
-    template_name = "greeting.html"
-    form_class = SignForm
-	
-    def form_valid(self, form):
-		
-		self.add_greeting(form)	
-		time.sleep(0.5)
-		return redirect("main")
-	
-    def add_greeting(self, form):
-		guestbook_name = form.cleaned_data["guestbook_name"]
-		guestbooks = Guestbook.query(Guestbook.name==guestbook_name).get()
-		greeting = Greeting()
-			
-		if guestbooks is None:
-			guestbook = Guestbook()
-			guestbook.name = guestbook_name
-			guestbook.put()
-		else:
-			guestbook = guestbooks
-    	
-		if users.get_current_user():
-			greeting.author = users.get_current_user()
-    
-		greeting.content = form.cleaned_data["greeting_message"]
-		greeting.guestbook = guestbook
-		greeting.put()
-		
+	template_name = "greeting.html"
+	form_class = SignForm
+	def form_valid(self, form):
+		time.sleep(0.01)
+		return redirect("/?guestbook_name="+Greeting.put_from_dict(form.cleaned_data))
 	
