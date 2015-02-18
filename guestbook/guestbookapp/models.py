@@ -57,6 +57,10 @@ class Greeting(ndb.Model):
 						return None
 
 	@classmethod
+	def get_greeting(cls,guestbook_name,greeting_id):
+			return cls.query(cls.key==ndb.Key("Guestbook", str(guestbook_name),"Greeting", int(greeting_id))).get()
+
+	@classmethod
 	def put_from_dict(cls, dictionary):
 				guestbook_name = dictionary.get("guestbook_name")
 				if not guestbook_name:
@@ -73,14 +77,14 @@ class Greeting(ndb.Model):
 
 	@classmethod
 	def edit_greeting(cls, dictionary):
-		    	greeting_id = dictionary.get("greeting_id")
-		    	greeting_content = dictionary.get("greeting_message")
-		    	guestbook_name = dictionary.get("guestbook_name")
-		    	if not guestbook_name:
+				greeting_id = dictionary.get("greeting_id")
+				greeting_content = dictionary.get("greeting_message")
+				guestbook_name = dictionary.get("guestbook_name")
+				if not guestbook_name:
 					guestbook_name = DEFAULT_GUESTBOOK_NAME
-		    	if Guestbook.isExist(guestbook_name) is False:
+				if Guestbook.isExist(guestbook_name) is False:
 						Guestbook.add_guestbook(guestbook_name)
-		        greeting = Greeting.query(Greeting.key==ndb.Key("Greeting", int(greeting_id))).get()
-		        greeting.content = greeting_content
-		        greeting.put()
-		        return guestbook_name
+				greeting = cls.query(Greeting.key==ndb.Key("Guestbook",guestbook_name,"Greeting", int(greeting_id))).get()
+				greeting.content = greeting_content
+				greeting.put()
+				return guestbook_name
