@@ -1,9 +1,7 @@
 from google.appengine.ext import ndb
-<<<<<<< HEAD
-from django.core.urlresolvers import reverse
-=======
+
 from google.appengine.api import users
->>>>>>> origin/feature/django-refactoring
+
 
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
@@ -58,9 +56,6 @@ class Greeting(ndb.Model):
 					except ValueError:
 						return None
 
-<<<<<<< HEAD
-
-=======
 	@classmethod
 	def put_from_dict(cls, dictionary):
 				guestbook_name = dictionary.get("guestbook_name")
@@ -75,4 +70,17 @@ class Greeting(ndb.Model):
 					greeting.content = dictionary.get("greeting_message")
 					greeting.put()
 					return guestbook_name
->>>>>>> origin/feature/django-refactoring
+
+	@classmethod
+	def edit_greeting(cls, dictionary):
+		    	greeting_id = dictionary.get("greeting_id")
+		    	greeting_content = dictionary.get("greeting_message")
+		    	guestbook_name = dictionary.get("guestbook_name")
+		    	if not guestbook_name:
+					guestbook_name = DEFAULT_GUESTBOOK_NAME
+		    	if Guestbook.isExist(guestbook_name) is False:
+						Guestbook.add_guestbook(guestbook_name)
+		        greeting = Greeting.query(Greeting.key==ndb.Key("Greeting", int(greeting_id))).get()
+		        greeting.content = greeting_content
+		        greeting.put()
+		        return guestbook_name

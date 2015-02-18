@@ -1,19 +1,11 @@
 {% load url from future %}
 {% csrf_token %}
-<<<<<<< HEAD
-{% for guestbook in guestbooks %}
-<p>Guestbook:       {{guestbook.name}}</p>
-{% for greeting in greetings %}
-	{% if guestbook.name == greeting.guestbook.name %}
-	{% if greeting.author.nickname %} 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ greeting.author }} wrote: 
-  {% else %} <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;An anonymous person wrote: 
-=======
+
 {% for greeting in greetings %} 
   {% if greeting.author.nickname %} 
     {{ greeting.author }} wrote: 
   {% else %} An anonymous person wrote: 
->>>>>>> origin/feature/django-refactoring
+
   {% endif %} 
   {{ greeting.content|escape }} at {{ greeting.date}}
    {% if currentUser %}

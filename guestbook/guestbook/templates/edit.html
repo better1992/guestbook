@@ -4,8 +4,7 @@
 {{form.greeting_id}}
 {% csrf_token %} {{form.non_field_errors}}
 
-{{form.guestbook_name.label}}		{{form.guestbook_name}}	{{form.guestbook_name.errors}} <br>
-{{form.greeting_message.label}}		{{form.greeting_message}}	{{form.greeting_message.errors}}<br>
+ {{ form.as_p }}
 <input type="submit" value="Update">
 </form>
 <a href="{% url 'main' %}"><input type='button' value="Back"/></a>
