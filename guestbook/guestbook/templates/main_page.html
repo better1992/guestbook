@@ -10,7 +10,7 @@
   {{ greeting.content|escape }} at {{ greeting.date}}
    {% if currentUser %}
    		{% if isAdmin %}
-  			<span><a href="{% url 'edit' %}?id={{greeting.key.id}}"><input  type="button" value='Edit'/></a>&nbsp;</span>
+  			<span><a href="{% url 'edit' %}?id={{greeting.key.id}}&guestbook_name={{ guestbook_name}}"><input  type="button" value='Edit'/></a>&nbsp;<a href="{% url 'delete' %}?id={{greeting.key.id}}&guestbook_name={{ guestbook_name}}"><input  type="button" value='Delete'/></a></span>
    		{% else %}
    			{% if currentUser = greeting.author %}
    				<a href="{% url 'edit' %}?id={{greeting.key.id}}&guestbook_name={{ guestbook_name}}"><input  type="button" value='Edit'/></a>
@@ -24,7 +24,7 @@
 <a href="{% url 'sign' %}"><input type="button" value='Sign'/></a> </br>
 
 
- <form>Guestbook name:
+ <form method="GET" action='/'>Guestbook name:
       <input value="{{ guestbook_name }}" name="guestbook_name">
       <input type="submit" value="switch">
     </form>
