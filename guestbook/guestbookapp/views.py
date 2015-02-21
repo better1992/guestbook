@@ -87,7 +87,30 @@ class GreetingEditView(FormView):
 	def form_valid(self, form):
 		time.sleep(0.01)
 		return redirect("/?guestbook_name="+Greeting.edit_greeting(form.cleaned_data))
-	
-  
 
 
+class GreetingDeleteView(TemplateView):
+	template_name = 'main_page.html'
+	def get_context_data(self,**kwargs):
+		dictionary = self.request.GET
+		time.sleep(0.01)
+		guestbook_name = dictionary.get("guestbook_name")
+		Greeting.delete_greeting(dictionary)
+		greetings = Greeting.get_latest(guestbook_name, 10)
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.get_full_path())
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.get_full_path())
+			url_linktext = 'Login'
+
+		template_values = {
+			'greetings': greetings,
+			'url': url,		
+			'url_linktext': url_linktext,
+			'isAdmin' : users.is_current_user_admin(),
+			'currentUser' : users.get_current_user(),
+			'guestbook_name': guestbook_name
+		}
+
+		return template_values;
