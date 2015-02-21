@@ -88,3 +88,11 @@ class Greeting(ndb.Model):
 				greeting.content = greeting_content
 				greeting.put()
 				return guestbook_name
+
+	@classmethod
+	def delete_greeting(cls,dictionary):
+				greeting_id = dictionary.get("id")
+				guestbook_name = dictionary.get("guestbook_name")
+				greeting = cls.query(Greeting.key == ndb.Key("Guestbook",guestbook_name,"Greeting",int(greeting_id))).get()
+				greeting.key.delete()
+				
