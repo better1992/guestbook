@@ -84,7 +84,15 @@ class Greeting(ndb.Model):
 					guestbook_name = DEFAULT_GUESTBOOK_NAME
 				if Guestbook.isExist(guestbook_name) is False:
 						Guestbook.add_guestbook(guestbook_name)
-				greeting = cls.query(Greeting.key==ndb.Key("Guestbook",guestbook_name,"Greeting", int(greeting_id))).get()
+						greeting = cls(parent = Guestbook.get_guestbook_key(guestbook_name))
+						if users.get_current_user():
+							greeting.author = users.get_current_user()
+				else:
+						greeting = cls.query(Greeting.key==ndb.Key("Guestbook",guestbook_name,"Greeting", int(greeting_id))).get()
+						if greeting is None:
+							greeting = cls(parent = Guestbook.get_guestbook_key(guestbook_name))
+							if users.get_current_user():
+								greeting.author = users.get_current_user()
 				greeting.content = greeting_content
 				greeting.put()
 				return guestbook_name
