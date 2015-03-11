@@ -10,38 +10,41 @@ DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 # However, the write rate should be limited to ~1/second.
 
 
-
 class GuestBook(ndb.Model):
-    '''Models an individual GuestBook entry.'''
+    """Models an individual GuestBook entry."""
     name = ndb.StringProperty(indexed=True)
 
     @staticmethod
     def get_guestbook(guestbook_name):
-                        try:
-                            return GuestBook.query(GuestBook.name == guestbook_name).get()
-                        except (RuntimeError, ValueError):
-                            return None
-    
+        try:
+            return GuestBook.query(GuestBook.name == guestbook_name).get()
+        except (RuntimeError, ValueError):
+            return None
+
     @staticmethod
     def add_guestbook(guestbook_name):
-            try:
-                guestbook = GuestBook()
-                guestbook.name = guestbook_name
-                guestbook.put()
-                return True
-            except (RuntimeError, TypeError):
-                return False
-
-    @staticmethod
-    def isExist(guestbook_name):
-        if GuestBook.get_guestbook(guestbook_name) is None:
-            return False
-        else:
+        try:
+            guestbook = GuestBook()
+            guestbook.name = guestbook_name
+            guestbook.put()
             return True
+        except (RuntimeError, TypeError):
+            return False
 
-    @staticmethod
-    def get_guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
-        return ndb.Key('GuestBook', guestbook_name)
+
+def get_guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
+    return ndb.Key('GuestBook', guestbook_name)
+
+
+def is_exist(guestbook_name):
+    """
+
+    :rtype : Guestbook
+    """
+    if GuestBook.get_guestbook(guestbook_name) is None:
+        return False
+    else:
+        return True
 
 
 class Greeting(ndb.Model):
@@ -49,59 +52,66 @@ class Greeting(ndb.Model):
     author = ndb.UserProperty()
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
-   
-    @classmethod
-    def get_latest(cls,guestbook_name,count):
-                    try:
-                        return cls.query(ancestor=GuestBook.get_guestbook_key(guestbook_name)).order(-cls.date).fetch(count)
-                    except ValueError:
-                        return None
 
     @classmethod
-    def get_greeting(cls,guestbook_name,greeting_id):
-            return cls.query(cls.key==ndb.Key("GuestBook", str(guestbook_name),"Greeting", int(greeting_id))).get()
+    def get_latest(cls, guestbook_name, count):
+        """
+
+        :type cls: Greeting
+        """
+        try:
+            return cls.query(ancestor=get_guestbook_key(guestbook_name)).order(-cls.date).fetch(
+                count)
+        except ValueError:
+            return None
+
+    @classmethod
+    def get_greeting(cls, guestbook_name, greeting_id):
+        return cls.query(cls.key == ndb.Key("GuestBook", str(guestbook_name), "Greeting",
+                                            int(greeting_id))).get()
 
     @classmethod
     def put_from_dict(cls, dictionary):
-                guestbook_name = dictionary.get("guestbook_name")
-                if not guestbook_name:
-                    return DEFAULT_GUESTBOOK_NAME
-                else:
-                    if GuestBook.isExist(guestbook_name) is False:
-                        GuestBook.add_guestbook(guestbook_name)
-                    greeting = cls(parent = GuestBook.get_guestbook_key(guestbook_name))
-                    if users.get_current_user():
-                            greeting.author = users.get_current_user()
-                    greeting.content = dictionary.get("greeting_message")
-                    greeting.put()
-                    return guestbook_name
+        guestbook_name = dictionary.get("guestbook_name")
+        if not guestbook_name:
+            return DEFAULT_GUESTBOOK_NAME
+        else:
+            if is_exist(guestbook_name) is False:
+                GuestBook.add_guestbook(guestbook_name)
+            greeting = cls(parent=get_guestbook_key(guestbook_name))
+            if users.get_current_user():
+                greeting.author = users.get_current_user()
+            greeting.content = dictionary.get("greeting_message")
+            greeting.put()
+            return guestbook_name
 
     @classmethod
     def edit_greeting(cls, dictionary):
-                greeting_id = dictionary.get("greeting_id")
-                greeting_content = dictionary.get("greeting_message")
-                guestbook_name = dictionary.get("guestbook_name")
-                if not guestbook_name:
-                    guestbook_name = DEFAULT_GUESTBOOK_NAME
-                if GuestBook.isExist(guestbook_name) is False:
-                        GuestBook.add_guestbook(guestbook_name)
-                        greeting = cls(parent = GuestBook.get_guestbook_key(guestbook_name))
-                        if users.get_current_user():
-                            greeting.author = users.get_current_user()
-                else:
-                        greeting = cls.query(Greeting.key==ndb.Key("GuestBook",guestbook_name,"Greeting", int(greeting_id))).get()
-                        if greeting is None:
-                            greeting = cls(parent = GuestBook.get_guestbook_key(guestbook_name))
-                            if users.get_current_user():
-                                greeting.author = users.get_current_user()
-                greeting.content = greeting_content
-                greeting.put()
-                return guestbook_name
+        greeting_id = dictionary.get("greeting_id")
+        greeting_content = dictionary.get("greeting_message")
+        guestbook_name = dictionary.get("guestbook_name")
+        if not guestbook_name:
+            guestbook_name = DEFAULT_GUESTBOOK_NAME
+        if GuestBook.isExist(guestbook_name) is False:
+            GuestBook.add_guestbook(guestbook_name)
+            greeting = cls(parent=get_guestbook_key(guestbook_name))
+            if users.get_current_user():
+                greeting.author = users.get_current_user()
+        else:
+            greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
+                                                         int(greeting_id))).get()
+            if greeting is None:
+                greeting = cls(parent=get_guestbook_key(guestbook_name))
+                if users.get_current_user():
+                    greeting.author = users.get_current_user()
+        greeting.content = greeting_content
+        greeting.put()
+        return guestbook_name
 
     @classmethod
-    def delete_greeting(cls,dictionary):
-                greeting_id = dictionary.get("id")
-                guestbook_name = dictionary.get("guestbook_name")
-                greeting = cls.query(Greeting.key == ndb.Key("GuestBook",guestbook_name,"Greeting",int(greeting_id))).get()
-                greeting.key.delete()
-                
+    def delete_greeting(cls, dictionary):
+        greeting_id = dictionary.get("id")
+        guestbook_name = dictionary.get("guestbook_name")
+        greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
+                                                     int(greeting_id))).get()
+        greeting.key.delete()

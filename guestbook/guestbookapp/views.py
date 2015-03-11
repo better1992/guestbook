@@ -88,8 +88,8 @@ class GreetingEditView(FormView):
 class GreetingDeleteView(TemplateView):
     template_name = 'main_page.html'
 
-    def get_context_data(self, **kwargs):
-        dictionary = kwargs
+    def get_context_data(self):
+        dictionary = self.request.GET
         time.sleep(0.01)
         guestbook_name = dictionary.get("guestbook_name")
         Greeting.delete_greeting(dictionary)
