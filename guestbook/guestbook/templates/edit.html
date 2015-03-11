@@ -1,8 +1,8 @@
 {% load url from future %} 
-<form method="post" action="{% url 'edit' %}?id={{form.greeting_id.value}}">
-{{ form.non_field_errors}}
-{{form.greeting_id}}
-{% csrf_token %} {{form.non_field_errors}}
+<form method="post" action="{% url 'edit' %}?id={{ form.greeting_id.value }}">
+{{ form.non_field_errors }}
+{{ form.greeting_id }}
+{% csrf_token %} {{ form.non_field_errors }}
 
  {{ form.as_p }}
 <input type="submit" value="Update">
