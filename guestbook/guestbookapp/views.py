@@ -1,20 +1,21 @@
-import time
-
-from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.shortcuts import redirect, render_to_response
+from django.views.generic import TemplateView, View
 from django.views.generic.edit import FormView
 from django import forms
+from django.core.context_processors import csrf
+from django.template import RequestContext
 
 from google.appengine.api import users
 
-from guestbookapp.models import Greeting, DEFAULT_GUESTBOOK_NAME
+from models import Greeting, AppConstants
 
 
 class MainView(TemplateView):
     template_name = "main_page.html"
 
     def get_context_data(self):
-        guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
+        guestbook_name = self.request.GET.get('guestbook_name',
+                                              AppConstants().get_default_guestbook_name)
 
         greetings = Greeting.get_latest(guestbook_name, 10)
 
@@ -57,10 +58,14 @@ class SignView(FormView):
     template_name = "greeting.html"
     form_class = SignForm
 
-    @staticmethod
-    def form_valid(form):
-        time.sleep(0.01)
-        return redirect("/?guestbook_name=" + Greeting.put_from_dict(form.cleaned_data))
+    def form_valid(self, form):
+        guestbook_name = form.cleaned_data['guestbook_name']
+        if Greeting.put_from_dict(form.cleaned_data):
+            return redirect("/?guestbook_name=" + guestbook_name)
+        else:
+            return render_to_response(self.template_name,
+                                      {'error': 'Have something wrong!'},
+                                      RequestContext(self.request))
 
 
 class GreetingEditView(FormView):
@@ -76,38 +81,30 @@ class GreetingEditView(FormView):
             greeting = Greeting.get_greeting(guestbook_name, greeting_id)
             initial["guestbook_name"] = guestbook_name
             initial["greeting_message"] = greeting.content
-            initial["greeting_id"] = int(greeting_id)
+            try:
+                initial["greeting_id"] = int(greeting_id)
+            except ValueError:
+                raise ValueError('ID of greeting is not a number!')
         return initial
 
-    @staticmethod
-    def form_valid(form):
-        time.sleep(0.01)
-        return redirect("/?guestbook_name=" + Greeting.edit_greeting(form.cleaned_data))
-
-
-class GreetingDeleteView(TemplateView):
-    template_name = 'main_page.html'
-
-    def get_context_data(self):
-        dictionary = self.request.GET
-        time.sleep(0.01)
-        guestbook_name = dictionary.get("guestbook_name")
-        Greeting.delete_greeting(dictionary)
-        greetings = Greeting.get_latest(guestbook_name, 10)
-        if users.get_current_user():
-            url = users.create_logout_url(self.request.get_full_path())
-            url_linktext = 'Logout'
+    def form_valid(self, form):
+        guestbook_name = form.cleaned_data['guestbook_name']
+        if Greeting.edit_greeting(form.cleaned_data):
+            return redirect("/?guestbook_name=" + guestbook_name)
         else:
-            url = users.create_login_url(self.request.get_full_path())
-            url_linktext = 'Login'
+            return render_to_response(self.template_name,
+                                      {'error': 'Have something wrong!'},
+                                      RequestContext(self.request))
 
-        template_values = {
-            'greetings': greetings,
-            'url': url,
-            'url_linktext': url_linktext,
-            'isAdmin': users.is_current_user_admin(),
-            'currentUser': users.get_current_user(),
-            'guestbook_name': guestbook_name
-        }
 
-        return template_values
+class GreetingDeleteView(View):
+
+    def get(self, request):
+        dictionary = request.GET
+        guestbook_name = dictionary.get("guestbook_name")
+        if Greeting.delete_greeting(dictionary):
+            return render_to_response('main_page.html',
+                                      {'error': 'Have something wrong!'},
+                                      RequestContext(self.request))
+        else:
+            return redirect("/?guestbook_name=" + guestbook_name)

@@ -1,13 +1,17 @@
 from google.appengine.ext import ndb
-
 from google.appengine.api import users
 
-
-DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 # We set a parent key on the 'Greetings' to ensure that they are all in the same
 # entity group. Queries across the single entity group will be consistent.
 # However, the write rate should be limited to ~1/second.
+
+
+class AppConstants(object):
+
+    @property
+    def get_default_guestbook_name(self):
+        return "default_guestbook"
 
 
 class GuestBook(ndb.Model):
@@ -32,7 +36,7 @@ class GuestBook(ndb.Model):
             return False
 
 
-def get_guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
+def get_guestbook_key(guestbook_name=AppConstants().get_default_guestbook_name):
     return ndb.Key('GuestBook', guestbook_name)
 
 
@@ -72,18 +76,21 @@ class Greeting(ndb.Model):
 
     @classmethod
     def put_from_dict(cls, dictionary):
-        guestbook_name = dictionary.get("guestbook_name")
+        guestbook_name = dictionary.get("guestbook_name", )
         if not guestbook_name:
-            return DEFAULT_GUESTBOOK_NAME
+            return False
         else:
-            if is_exist(guestbook_name) is False:
-                GuestBook.add_guestbook(guestbook_name)
-            greeting = cls(parent=get_guestbook_key(guestbook_name))
-            if users.get_current_user():
-                greeting.author = users.get_current_user()
-            greeting.content = dictionary.get("greeting_message")
-            greeting.put()
-            return guestbook_name
+            try:
+                if is_exist(guestbook_name) is False:
+                    GuestBook.add_guestbook(guestbook_name)
+                greeting = cls(parent=get_guestbook_key(guestbook_name))
+                if users.get_current_user():
+                    greeting.author = users.get_current_user()
+                greeting.content = dictionary.get("greeting_message")
+                greeting.put()
+                return True
+            except StandardError:
+                return False
 
     @classmethod
     def edit_greeting(cls, dictionary):
@@ -91,27 +98,35 @@ class Greeting(ndb.Model):
         greeting_content = dictionary.get("greeting_message")
         guestbook_name = dictionary.get("guestbook_name")
         if not guestbook_name:
-            guestbook_name = DEFAULT_GUESTBOOK_NAME
-        if GuestBook.isExist(guestbook_name) is False:
-            GuestBook.add_guestbook(guestbook_name)
-            greeting = cls(parent=get_guestbook_key(guestbook_name))
-            if users.get_current_user():
-                greeting.author = users.get_current_user()
-        else:
-            greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
-                                                         int(greeting_id))).get()
-            if greeting is None:
+            guestbook_name = AppConstants().get_default_guestbook_name
+        try:
+            if is_exist(guestbook_name) is False:
+                GuestBook.add_guestbook(guestbook_name)
                 greeting = cls(parent=get_guestbook_key(guestbook_name))
                 if users.get_current_user():
                     greeting.author = users.get_current_user()
-        greeting.content = greeting_content
-        greeting.put()
-        return guestbook_name
+            else:
+                greeting = cls.query(
+                    Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
+                                            int(greeting_id))).get()
+                if greeting is None:
+                    greeting = cls(parent=get_guestbook_key(guestbook_name))
+                    if users.get_current_user():
+                        greeting.author = users.get_current_user()
+            greeting.content = greeting_content
+            greeting.put()
+            return True
+        except StandardError:
+            return False
 
     @classmethod
     def delete_greeting(cls, dictionary):
         greeting_id = dictionary.get("id")
         guestbook_name = dictionary.get("guestbook_name")
-        greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
-                                                     int(greeting_id))).get()
-        greeting.key.delete()
+        try:
+            greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
+                                                         int(greeting_id))).get()
+            greeting.key.delete()
+            return True
+        except StandardError:
+            return False

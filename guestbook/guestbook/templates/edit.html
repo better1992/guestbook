@@ -1,5 +1,5 @@
 {% load url from future %} 
-<form method="post" action="{% url 'edit' %}?id={{ form.greeting_id.value }}">
+<form method="post" action="{% url 'edit' %}">
 {{ form.non_field_errors }}
 {{ form.greeting_id }}
 {% csrf_token %} {{ form.non_field_errors }}

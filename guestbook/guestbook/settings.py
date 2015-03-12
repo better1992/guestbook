@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 
 ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
-TEMPLATE_DIRS = (os.path.join(ROOT_PATH,"templates"))
+TEMPLATE_DIRS = (os.path.join(ROOT_PATH, "templates"))
 # BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -46,14 +46,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-  
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'guestbook.urls'
 
-#WSGI_APPLICATION = 'guestbook_django.wsgi.application'
+# WSGI_APPLICATION = 'guestbook_django.wsgi.application'
 
 
 # Database
