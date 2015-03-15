@@ -1,13 +1,13 @@
 import json
+import datetime
 from django.http import HttpResponse
-from django.views.generic import View
 from django.views.generic import FormView
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
 from django import forms
 from django.http import Http404
 from google.appengine.ext import ndb
-import json
+
 from models import Greeting, GuestBook, AppConstants
 from views import SignForm
 
@@ -106,10 +106,16 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
+        if users.get_current_user():
+            updated_by = users.get_current_user().nickname()
+        else:
+            updated_by = None
         dict = {
             'guestbook_name': ,self.kwargs.get("guestbook_name"),
             'greeting_id': self.kwargs.get("greeting_id"),
-            'content': form.cleaned_data["greeting_message"]
+            'content': form.cleaned_data["greeting_message"],
+            'updated_by': updated_by,
+            'updated_day': str(datetime.datetime.now().date())
         }
 
         if Greeting.edit_greeting(dict):
