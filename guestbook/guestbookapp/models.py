@@ -1,6 +1,6 @@
 from google.appengine.ext import ndb
 from google.appengine.api import users
-
+from google.appengine.datastore.datastore_query import Cursor
 
 # We set a parent key on the 'Greetings' to ensure that they are all in the same
 # entity group. Queries across the single entity group will be consistent.
@@ -58,16 +58,14 @@ class Greeting(ndb.Model):
     date = ndb.DateTimeProperty(auto_now_add=True)
 
     @classmethod
-    def get_latest(cls, guestbook_name, count):
+    def get_latest(cls, guestbook_name, count, cursor):
         """
 
         :type cls: Greeting
         """
-        try:
-            return cls.query(ancestor=get_guestbook_key(guestbook_name)).order(-cls.date).fetch(
-                count)
-        except ValueError:
-            return None
+        curs = Cursor(urlsafe=cursor)
+        greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).fetch_page(count, start_cursor=curs)
+        return greets, next_curs, more
 
     @classmethod
     def get_greeting(cls, guestbook_name, greeting_id):
@@ -76,7 +74,7 @@ class Greeting(ndb.Model):
 
     @classmethod
     def put_from_dict(cls, dictionary):
-        guestbook_name = dictionary.get("guestbook_name", )
+        guestbook_name = dictionary.get("guestbook_name")
         if not guestbook_name:
             return False
         else:
@@ -126,7 +124,10 @@ class Greeting(ndb.Model):
         try:
             greeting = cls.query(Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
                                                          int(greeting_id))).get()
-            greeting.key.delete()
-            return True
+            if greeting is None:
+                return False
+            else:
+                greeting.key.delete()
+                return True
         except StandardError:
             return False

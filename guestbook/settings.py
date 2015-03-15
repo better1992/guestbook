@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'guestbook.urls'
+ROOT_URLCONF = 'urls'
 
 # WSGI_APPLICATION = 'guestbook_django.wsgi.application'
 

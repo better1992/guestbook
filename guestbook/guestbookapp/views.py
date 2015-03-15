@@ -16,8 +16,8 @@ class MainView(TemplateView):
     def get_context_data(self):
         guestbook_name = self.request.GET.get('guestbook_name',
                                               AppConstants().get_default_guestbook_name)
-
-        greetings = Greeting.get_latest(guestbook_name, 10)
+        cursor = self.request.GET.get("cursor", None)
+        greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
 
         if users.get_current_user():
             url = users.create_logout_url(self.request.get_full_path())
