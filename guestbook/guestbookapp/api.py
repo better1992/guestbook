@@ -4,11 +4,11 @@ from django.http import HttpResponse
 from django.views.generic import FormView
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
-from django import forms
 from django.http import Http404
-from google.appengine.ext import ndb
 
-from models import Greeting, GuestBook, AppConstants
+from google.appengine.api import users
+
+from models import Greeting
 from views import SignForm
 
 class JSONResponseMixin(object):
@@ -59,23 +59,25 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
     def post(self, request, *args, **kwargs):
         return super(GreetingService, self).post(self, request, *args, **kwargs)
 
-    def form_valid(self, form):
+    @staticmethod
+    def form_valid(form):
         guestbook_name = form.cleaned_data.get('guestbook_name')
-        dict = {
+        dict_parameter = {
             'guestbook_name': guestbook_name,
             'greeting_message': form.cleaned_data.get('greeting_message')
         }
-        new_greeting = Greeting.put_from_dict(dict)
-        if new_greeting:
+        if Greeting.put_from_dict(dict_parameter):
             return HttpResponse(status=204)
         else:
             return HttpResponse(status=404)
 
-    def form_invalid(self, form):
+    @staticmethod
+    def form_invalid():
         return HttpResponse(status=400)
 
 
 class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
+    form_class = SignForm
 
     # handle GET request: get a message and return HttpStatus code
     def get_object(self):
@@ -96,46 +98,46 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
         return data
 
     # handle PUT request: Edit a message and return HttpStatus code
-    def put(self, request, *args, **kwargs):
+    def put(self, request):
         request.POST = json.loads(request.body)
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         if form.is_valid():
             return self.form_valid(form)
         else:
-            return self.form_invalid(form)
+            return self.form_invalid()
 
     def form_valid(self, form):
         if users.get_current_user():
             updated_by = users.get_current_user().nickname()
         else:
             updated_by = None
-        dict = {
-            'guestbook_name': ,self.kwargs.get("guestbook_name"),
+        dict_parameter = {
+            'guestbook_name': self.kwargs.get("guestbook_name"),
             'greeting_id': self.kwargs.get("greeting_id"),
             'content': form.cleaned_data["greeting_message"],
             'updated_by': updated_by,
             'updated_day': str(datetime.datetime.now().date())
         }
 
-        if Greeting.edit_greeting(dict):
+        if Greeting.edit_greeting(dict_parameter):
             return HttpResponse(status=204)
         else:
             return HttpResponse(status=404)
 
-    def form_invalid(self, form):
+    @staticmethod
+    def form_invalid():
         return HttpResponse(status=400)
 
-
     # handle DELETE request: Delete a message and return HttpStatus code
-    def delete(self, *args, **kwargs):
-        dict = {
+    @staticmethod
+    def delete(**kwargs):
+        dict_parameter = {
             'greeting_id': kwargs.get("greeting_id"),
             'guestbook_name': kwargs.get("guestbook_name")
         }
-        
-        if Greeting.delete_greeting(dict):
+
+        if Greeting.delete_greeting(dict_parameter):
             return HttpResponse(status=204)
         else:
             return HttpResponse(status=404)
-
