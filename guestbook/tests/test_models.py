@@ -97,7 +97,6 @@ class TestGuestBook(TestBassClass):
         result = get_guestbook_key(guestbook.name)
         self.assertEqual(get_key_method('GuestBook', guestbook.name), result)
 
-
     def test_get_guestbook(self):
         assert GuestBook.get_guestbook('demo').name == 'demo'
 
