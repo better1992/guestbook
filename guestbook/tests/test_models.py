@@ -16,14 +16,9 @@ class TestBassClass(TestCase):
             overwrite=True)
 
     def setUp(self):
-        # Activate the testbed, which prepares the service stubs for use.
-
         self.testbed.activate()
-
-        # Next, declare which service stubs you want to use.
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_memcache_stub()
-
         self.testbed.init_user_stub()
         self.generate_user('test@example.com', '123456', True)
         for i in range(1, 21):
@@ -43,9 +38,7 @@ class TestGreeting(TestBassClass):
         'guestbook_name': 'demo',
         'greeting_message': '123'
         }
-
         result = Greeting.put_from_dict(dict_parameter)
-        greetings_test = mock.Mock(return_value=result)
         assert result is not None
         assert result.author.nickname() == 'test@example.com'
         assert result.content == '123'
@@ -55,10 +48,9 @@ class TestGreeting(TestBassClass):
         'guestbook_name': 'demo',
         'greeting_message': '123'
         }
-
-        newGreeting = Greeting.put_from_dict(dict_parameter)
-        result = Greeting.get_greeting('demo', newGreeting.key.id())
-        assert result.key.id() == newGreeting.key.id()
+        new_greeting = Greeting.put_from_dict(dict_parameter)
+        result = Greeting.get_greeting('demo', new_greeting.key.id())
+        assert result.key.id() == new_greeting.key.id()
 
     def test_get_latest(self):
         greetings, next_cursor, more = Greeting.get_latest('demo', 10, None)
