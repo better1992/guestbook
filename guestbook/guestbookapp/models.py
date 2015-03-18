@@ -1,3 +1,56 @@
+from google.appengine.ext import ndb
+from google.appengine.api import users
+from google.appengine.datastore.datastore_query import Cursor
+from google.appengine.ext.db import Error
+# We set a parent key on the 'Greetings' to ensure that they are all in the same
+# entity group. Queries across the single entity group will be consistent.
+# However, the write rate should be limited to ~1/second.
+
+
+class AppConstants(object):
+	@property
+	def get_default_guestbook_name(self):
+		return "default_guestbook"
+
+
+class GuestBook(ndb.Model):
+	"""Models an individual GuestBook entry."""
+	name = ndb.StringProperty(indexed=True)
+
+	@staticmethod
+	def get_guestbook(guestbook_name):
+		try:
+			return GuestBook.query(GuestBook.name == guestbook_name).get()
+		except (RuntimeError, ValueError):
+			return None
+
+	@staticmethod
+	def add_guestbook(guestbook_name):
+		try:
+			guestbook = GuestBook()
+			guestbook.name = guestbook_name
+			guestbook.put()
+			return True
+		except (RuntimeError, TypeError):
+			return False
+
+
+def get_guestbook_key(guestbook_name=AppConstants().get_default_guestbook_name):
+	return ndb.Key('GuestBook', guestbook_name)
+
+
+def is_exist(guestbook_name):
+	"""
+
+	:rtype : Guestbook
+	"""
+	if GuestBook.get_guestbook(guestbook_name) is None:
+		return False
+	else:
+		return True
+
+
+class Greeting(ndb.Model):
 	"""Models an individual GuestBook entry."""
 +	author = ndb.UserProperty()
 +	content = ndb.StringProperty(indexed=False)
