@@ -26,13 +26,13 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 	form_class = SignForm
 
 	# handle GET request: get list messages and return as JSON
-	def get(self, *args, **kwargs):
+	def get_queryset(self):
 		cursor = self.request.GET.get("cursor", None)
-		guestbook_name = kwargs.get("guestbook_name")
-		try:
-			greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
-		except StandardError:
-			return Http404
+		guestbook_name = self.kwargs.get("guestbook_name")
+
+		greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
+		if greetings is None:
+			return HttpResponse(status=404)
 		lst_greeting = [greeting.to_dict() for greeting in greetings]
 
 		if next_cursor is None:
@@ -46,11 +46,7 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 			"more": more,
 			"next_cursor": next_cursor_url
 		}
-		self.object = data
-		return super(GreetingService, self).get(self.request, *args, **kwargs)
-
-	def get_queryset(self):
-		return self.object
+		return data
 
 	# handle POST request: create message and return HttpStatus code
 	def post(self, request, *args, **kwargs):
