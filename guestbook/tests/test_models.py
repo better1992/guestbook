@@ -2,6 +2,7 @@ from unittest import TestCase
 import mock
 from mock import patch, MagicMock
 from google.appengine.api import users
+from google.appengine.ext import testbed
 from guestbookapp.models import Greeting, GuestBook, get_guestbook_key
 
 
@@ -23,8 +24,8 @@ class TestBassClass(TestCase):
 		self.generate_user('test@example.com', '123456', True)
 		for i in range(1, 21):
 			dict_parameter = {
-			'guestbook_name': 'demo',
-			'greeting_message': 'message %d' % i
+				'guestbook_name': 'demo',
+				'greeting_message': 'message %d' % i
 			}
 			Greeting.put_from_dict(dict_parameter)
 
@@ -35,8 +36,8 @@ class TestBassClass(TestCase):
 class TestGreeting(TestBassClass):
 	def test_put_from_dict(self):
 		dict_parameter = {
-		'guestbook_name': 'demo',
-		'greeting_message': '123'
+			'guestbook_name': 'demo',
+			'greeting_message': '123'
 		}
 		result = Greeting.put_from_dict(dict_parameter)
 		assert result is not None
@@ -45,8 +46,8 @@ class TestGreeting(TestBassClass):
 
 	def test_get_greeting(self):
 		dict_parameter = {
-		'guestbook_name': 'demo',
-		'greeting_message': '123'
+			'guestbook_name': 'demo',
+			'greeting_message': '123'
 		}
 		new_greeting = Greeting.put_from_dict(dict_parameter)
 		result = Greeting.get_greeting('demo', new_greeting.key.id())
@@ -63,8 +64,8 @@ class TestGreeting(TestBassClass):
 		greetings, next_cursor, more = Greeting.get_latest('demo', 20, None)
 		id_1 = greetings[0].key.id()
 		dict_parameter = {
-		'id': greetings[0].key.id(),
-		'guestbook_name': 'demo'
+			'id': greetings[0].key.id(),
+			'guestbook_name': 'demo'
 		}
 		Greeting.delete_greeting(dict_parameter)
 		greetings, next_cursor, more = Greeting.get_latest('demo', 20, None)
@@ -80,9 +81,9 @@ class TestGreeting(TestBassClass):
 		greetings, next_cursor, more = Greeting.get_latest('demo', 20, None)
 		id_1 = greetings[0].key.id()
 		dict_parameter = {
-		'greeting_id': id_1,
-		'greeting_message': 'update_message',
-		'guestbook_name': 'demo'
+			'greeting_id': id_1,
+			'greeting_message': 'update_message',
+			'guestbook_name': 'demo'
 		}
 		result = Greeting.edit_greeting(dict_parameter)
 		assert result.content == 'update_message'
