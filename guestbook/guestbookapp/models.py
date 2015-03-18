@@ -74,7 +74,7 @@ class Greeting(ndb.Model):
 	def get_greeting(cls, guestbook_name, greeting_id):
 		return cls.query(
 			cls.key == ndb.Key("GuestBook", str(guestbook_name), "Greeting",
-							   int(greeting_id))).get()
+								int(greeting_id))).get()
 
 	@classmethod
 	def put_from_dict(cls, dictionary):
