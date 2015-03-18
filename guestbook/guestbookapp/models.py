@@ -64,9 +64,14 @@ class Greeting(ndb.Model):
 
 		:type cls: Greeting
 		"""
-		curs = Cursor(urlsafe=cursor)
-		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).fetch_page(
-			count, start_cursor=curs).order(-Greeting.date)
+		try:
+			curs = Cursor(urlsafe=cursor)
+			greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(-Greeting.date).fetch_page(
+				count, start_cursor=curs)
+		except Error:
+			greets = None
+			next_curs = None
+			more = None
 		return greets, next_curs, more
 
 	@classmethod
