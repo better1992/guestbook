@@ -64,9 +64,14 @@ class Greeting(ndb.Model):
 
 		:type cls: Greeting
 		"""
-		curs = Cursor(urlsafe=cursor)
-		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(-Greeting.date).fetch_page(
-			count, start_cursor=curs)
+		try:
+			curs = Cursor(urlsafe=cursor)
+			greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(-Greeting.date).fetch_page(
+				count, start_cursor=curs)
+		except Error:
+			greets = None
+			next_curs = None
+			more = None
 		return greets, next_curs, more
 
 	@classmethod
@@ -102,7 +107,7 @@ class Greeting(ndb.Model):
 			'date': str(cls.date),
 			'updated_by': str(cls.update_by),
 			'updated_date': str(cls.update_date),
-			}
+		}
 		return item
 
 	@classmethod
@@ -110,19 +115,27 @@ class Greeting(ndb.Model):
 		greeting_id = dictionary.get("greeting_id")
 		greeting_content = dictionary.get("greeting_message")
 		guestbook_name = dictionary.get("guestbook_name")
+		if not guestbook_name:
+			guestbook_name = AppConstants().get_default_guestbook_name
 		try:
-			greeting = cls.query(
-				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
-										int(greeting_id))).get()
-			if greeting is None:
+			if is_exist(guestbook_name) is False:
+				GuestBook.add_guestbook(guestbook_name)
 				greeting = cls(parent=get_guestbook_key(guestbook_name))
 				if users.get_current_user():
 					greeting.author = users.get_current_user()
+			else:
+				greeting = cls.query(
+					Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
+											int(greeting_id))).get()
+				if greeting is None:
+					greeting = cls(parent=get_guestbook_key(guestbook_name))
+					if users.get_current_user():
+						greeting.author = users.get_current_user()
 			greeting.content = greeting_content
 			greeting.put()
-			return greeting
+			return True
 		except Error:
-			return None
+			return False
 
 	@classmethod
 	def delete_greeting(cls, dictionary):
