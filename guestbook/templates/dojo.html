@@ -20,19 +20,19 @@
 		<br><br>
 
         <script type="text/javascript">
-	    {% autoescape off %}
-	        var dojoConfig = {
-				locale: 'en-us',
+            {% autoescape off %}
+            var dojoConfig = {
+                locale: 'en-us',
                 isDebug: true,
-	            baseUrl: '../static/js/dojo',
-	            paths: {
-	                'guestbookapp': '../guestbookapp'
-	            },
+                baseUrl: '../static/js/dojo',
+                paths: {
+                    'guestbookapp': '../guestbookapp'
+                },
                 guestbook_name : '{{guestbook_name}}',
-				isAdmin : '{{isAdmin}}',
-				currentUser : '{{currentUser}}'
-	        };
-	    {% endautoescape %}
+                isAdmin : '{{isAdmin}}',
+                currentUser : '{{currentUser}}'
+            };
+            {% endautoescape %}
         </script>
 
 
