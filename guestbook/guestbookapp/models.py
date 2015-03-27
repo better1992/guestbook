@@ -1,3 +1,4 @@
+import datetime
 from google.appengine.ext import ndb
 from google.appengine.api import users
 from google.appengine.datastore.datastore_query import Cursor
@@ -10,7 +11,7 @@ from google.appengine.ext.db import Error
 class AppConstants(object):
 	@property
 	def get_default_guestbook_name(self):
-		return "default_guestbook"
+		return "demo"
 
 
 class GuestBook(ndb.Model):
@@ -55,7 +56,7 @@ class Greeting(ndb.Model):
 	author = ndb.UserProperty()
 	content = ndb.StringProperty(indexed=False)
 	date = ndb.DateTimeProperty(auto_now_add=True)
-	update_by = ndb.UserProperty()
+	update_by = ndb.StringProperty()
 	update_date = ndb.DateTimeProperty(auto_now_add=False)
 
 	@classmethod
@@ -94,35 +95,37 @@ class Greeting(ndb.Model):
 			except Error:
 				return None
 
-	@classmethod
-	def to_dict(cls):
+	def to_dict(self):
+		if self.author is None:
+			author = 'Anonymous'
+		else:
+			author = str(self.author)
 		item = {
-			'id': str(cls.key.id()),
-			'author': str(cls.author),
-			'content': cls.content,
-			'date': str(cls.date),
-			'updated_by': str(cls.update_by),
-			'updated_date': str(cls.update_date),
+			'id': self.key.id(),
+			'author': author,
+			'content': str(self.content),
+			'date': str(self.date),
+			'updated_by': str(self.update_by),
+			'updated_date': str(self.update_date),
 		}
 		return item
 
 	@classmethod
 	def edit_greeting(cls, dictionary):
-		greeting_id = dictionary.get("greeting_id")
-		greeting_content = dictionary.get("greeting_message")
-		guestbook_name = dictionary.get("guestbook_name")
 		try:
+			greeting_id = dictionary["id"]
+			greeting_content = dictionary["content"]
+			guestbook_name = dictionary["guestbook_name"]
+			updated_by = dictionary['updated_by']
 			greeting = cls.query(
 				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
-										int(greeting_id))).get()
-			if greeting is None:
-				greeting = cls(parent=get_guestbook_key(guestbook_name))
-				if users.get_current_user():
-					greeting.author = users.get_current_user()
+				                        int(greeting_id))).get()
+			greeting.update_by = updated_by
+			greeting.update_date = datetime.datetime.now()
 			greeting.content = greeting_content
 			greeting.put()
 			return greeting
-		except Error:
+		except Error, ValueError:
 			return None
 
 	@classmethod

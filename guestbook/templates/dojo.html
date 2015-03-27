@@ -1,0 +1,47 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+    <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit//themes/tundra/tundra.css" />
+
+		<title>Dojo</title>
+	</head>
+	<body>
+
+		<div id="Guestbook">
+
+		</div>
+		</br>
+		<div>
+
+			<a href="{{ url }}">{{ url_linktext }}</a>
+		</div>
+
+		<br><br>
+
+        <script type="text/javascript">
+	    {% autoescape off %}
+	        var dojoConfig = {
+				locale: 'en-us',
+                isDebug: true,
+	            baseUrl: '../static/js/dojo',
+	            paths: {
+	                'guestbookapp': '../guestbookapp'
+	            },
+                guestbook_name : '{{guestbook_name}}',
+				isAdmin : '{{isAdmin}}',
+				currentUser : '{{currentUser}}'
+	        };
+	    {% endautoescape %}
+        </script>
+
+
+		<!-- load dojo -->
+		<script src="https://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"></script>
+        <script type="text/javascript">
+
+            require(['/static/js/guestbookapp/GuestbookApp.js']);
+        </script>
+
+
+	</body></html>

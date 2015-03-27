@@ -1,0 +1,74 @@
+<div>
+    <div>
+        <table>
+            <tr><td>Guestbook name: <td>
+                <td><input data-dojo-attach-point="guestbook_name" id="guestbook" data-dojo-type="dijit/form/TextBox" value="${guestbook_name}" required="true" /></td>
+                <td><button data-dojo-attach-point="get_list" data-dojo-type="dijit/form/Button" >Get List of Greeting</button></td>
+                <td><button data-dojo-attach-point="show_dialog" data-dojo-type="dijit/form/Button" type="button" onClick="myDialog.show();">
+            Sign new Greeting</button></td>
+                 <td><div data-dojo-attach-point="delete_div" style="display: None" ><button data-dojo-attach-point="delete_all" data-dojo-type="dijit/form/Button" type="button" >
+            Delete All</button></div></td>
+            </tr>
+        </table>
+
+
+        <div data-dojo-type="dijit/Dialog" data-dojo-id="myDialog" title="New Greeting">
+            <table class="dijitDialogPaneContentArea">
+
+                <tr>
+                    <td><label for="content_new_greeting">Content:</label></td>
+                    <td><input data-dojo-type="dijit/form/TextBox" name="content_dialog" id="content_dialog"></td>
+                </tr>
+            </table>
+
+            <div class="dijitDialogPaneActionBar">
+                <button data-dojo-attach-point="sign" data-dojo-type="dijit/form/Button" type="submit" id="ok">OK</button>
+                <button data-dojo-type="dijit/form/Button" type="button"  data-dojo-props="onClick:function(){myDialog.hide();}"
+                        id="cancel">Cancel</button>
+            </div>
+        </div>
+
+         <div data-dojo-type="dijit/Dialog" data-dojo-attach-point="detail_dialog" data-dojo-id="detail_Dialog" title="Detail Greeting">
+            <table class="dijitDialogPaneContentArea">
+
+                <tr>
+                    <td><label for="id_greeting">ID:</label></td>
+                    <td><p data-dojo-attach-point="ID"></p></td>
+                </tr>
+                 <tr>
+                    <td><label for="guestbook_greeting">Guestbook name:</label></td>
+                    <td><p data-dojo-attach-point="guestbook_name_dialog"></p></td>
+                </tr>
+                <tr>
+                    <td><label for="author_greeting">Author:</label></td>
+                    <td><p data-dojo-attach-point="author_dialog"></p></td>
+                </tr>
+                <tr>
+                    <td><label for="content_greeting">Content:</label></td>
+                    <td><p data-dojo-attach-point="content_dialog"></p></td>
+                </tr>
+                <tr>
+                    <td><label for="date_greeting">Date:</label></td>
+                    <td><p data-dojo-attach-point="date_dialog"></p></td>
+                </tr>
+                <tr>
+                    <td><label for="updated_by_greeting">Updated by:</label></td>
+                    <td><p data-dojo-attach-point="updated_by_dialog"></p></td>
+                </tr>
+                <tr>
+                    <td><label for="updated_date_greeting">Updated date:</label></td>
+                    <td><p data-dojo-attach-point="updated_date_dialog"></p></td>
+                </tr>
+            </table>
+
+            <div class="dijitDialogPaneActionBar">
+                <button data-dojo-type="dijit/form/Button" type="button"
+                        data-dojo-attach-point="ok_detail">OK</button>
+            </div>
+        </div>
+
+
+    </div>
+    </br>
+    <table data-dojo-attach-point="greetings" id="greetingContainer" ></table>
+</div>

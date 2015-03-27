@@ -63,8 +63,7 @@ class SignView(FormView):
 		if Greeting.put_from_dict(form.cleaned_data):
 			return redirect("/?guestbook_name=" + guestbook_name)
 		else:
-			return render_to_response(self.template_name,
-									  {'error': 'Have something wrong!'},
+			return render_to_response(self.template_name, {'error': 'Have something wrong!'},
 									  RequestContext(self.request))
 
 
@@ -98,7 +97,6 @@ class GreetingEditView(FormView):
 
 
 class GreetingDeleteView(View):
-
 	def get(self, request):
 		dictionary = request.GET
 		guestbook_name = dictionary.get("guestbook_name")
@@ -108,3 +106,30 @@ class GreetingDeleteView(View):
 									  RequestContext(self.request))
 		else:
 			return redirect("/?guestbook_name=" + guestbook_name)
+
+
+class DojoView(TemplateView):
+	template_name = 'dojo.html'
+
+	def get_context_data(self):
+		guestbook_name = self.request.GET.get('guestbook_name',
+											  AppConstants().get_default_guestbook_name)
+		#cursor = self.request.GET.get("cursor", None)
+		#greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
+
+		if users.get_current_user():
+			url = users.create_logout_url(self.request.get_full_path())
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.get_full_path())
+			url_linktext = 'Login'
+
+		template_values = {
+			'url': url,
+			'url_linktext': url_linktext,
+			'isAdmin': users.is_current_user_admin(),
+			'currentUser': users.get_current_user(),
+		    'guestbook_name': guestbook_name
+		}
+
+		return template_values

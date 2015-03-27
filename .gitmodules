@@ -1,0 +1,15 @@
+[submodule "guestbook/static/dojo/static/js/dojo/dojo"]
+	path = guestbook/static/dojo/static/js/dojo/dojo
+	url = https://github.com/dojo/dojo
+[submodule "guestbook/static/js/dojo/dojo"]
+	path = guestbook/static/js/dojo/dojo
+	url = https://github.com/dojo/dojo
+[submodule "guestbook/static/js/dojo/dijit"]
+	path = guestbook/static/js/dojo/dijit
+	url = https://github.com/dojo/dijit
+[submodule "guestbook/static/js/dojo/dojox"]
+	path = guestbook/static/js/dojo/dojox
+	url = https://github.com/dojo/dijit
+[submodule "guestbook/static/js/dojo/util"]
+	path = guestbook/static/js/dojo/util
+	url = https://github.com/dojo/dijit
