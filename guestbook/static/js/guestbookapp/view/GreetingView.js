@@ -46,7 +46,7 @@ define([
 				dojo.style(this.optionNode, 'display', 'None');
 			}
             this.own(
-				on(this.deleteNode, 'click', lang.hitch(this, 'deleteNodeWidget')),
+				on(this.deleteNode, 'click', lang.hitch(this, 'deleteWidget')),
 				on(this.show_EditNode, 'click', lang.hitch(this, 'showEdit')),
 				on(this.Cancel_EditNode, 'click', lang.hitch(this, 'cancelEdit')),
 				on(this.Ok_EditNode, 'click', lang.hitch(this, 'okEdit')),
@@ -54,8 +54,8 @@ define([
 			);
 		},
 
-        deleteNodeWidget: function(){
-            this.guestbookStore.remove(this.id);
+        deleteWidget: function(){
+            this.guestbookStore.deleteGreeting(this.id);
 			this.destroyRecursive();
 
         },
@@ -79,12 +79,12 @@ define([
 					guestbook_name: this.guestbook_name,
 					greeting_message: this.contentNode.get('value')
 				}
-			this.guestbookStore.put(putData);
+			this.guestbookStore.putGreeting(putData);
 
 		},
 
 		showDetail: function() {
-			this.guestbookStore.get(this.id).then(lang.hitch(this, function (greeting) {
+			this.guestbookStore.getGreeting(this.id).then(lang.hitch(this, function (greeting) {
 				this.guestbookWidget.IDNode.innerHTML = greeting['object'].id;
 				this.guestbookWidget.guestbook_name_dialogNode.innerHTML = greeting['object'].guestbook_name;
 				this.guestbookWidget.author_dialogNode.innerHTML = greeting['object'].author;

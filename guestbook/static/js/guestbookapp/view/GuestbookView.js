@@ -31,8 +31,7 @@ define([
 		constructor: function (params) {
             this.guestbook_name = config.guestbook_name;
 			//var guestbook_name = this.guestbook_name;
-			var store = new GuestbookStore({'guestbook_name': this.guestbook_name });
-        	this.guestbookStore = store.guestbookStore;
+			this.guestbookStore = new GuestbookStore({'guestbook_name': this.guestbook_name });
 		},
 
 		postCreate: function(){
@@ -50,7 +49,7 @@ define([
 		getList: function() {
 			this.deleteAll();
 			var guestbook_name = dijit.byId('guestbook').get('value');
-			this.guestbookStore.query().then(lang.hitch(this, function(result){
+			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
 				var list = result['object_list']['greetings'];
 				if (list.length > 0){
@@ -86,7 +85,7 @@ define([
 					guestbook_name: this.guestbook_nameNode.get('value'),
 					greeting_message: this.content_dialog_signNode.get('value')
 				}
-			this.guestbookStore.add(postData);
+			this.guestbookStore.signGreeting(postData);
 		},
 
 		deleteAll: function() {

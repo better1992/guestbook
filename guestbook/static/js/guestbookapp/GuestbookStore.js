@@ -19,6 +19,31 @@ define([
 				{ target: this.target, headers: {"X-CSRFToken": _cookie('csrftoken')}}
 			);
 			this.guestbookStore = GuestbookJsonRestStore;
+		},
+
+		postCreate: function(){
+			this.inherited(arguments);
+		},
+
+		getGreetings: function() {
+			return this.guestbookStore.query();
+		},
+
+		getGreeting: function(id) {
+			return this.guestbookStore.get(id);
+		},
+
+		putGreeting: function(data) {
+			this.guestbookStore.put(data);
+		},
+
+		deleteGreeting: function(id) {
+			this.guestbookStore.remove(id);
+		},
+
+		signGreeting: function(data) {
+			this.guestbookStore.add(data);
 		}
+
 	});
 });
