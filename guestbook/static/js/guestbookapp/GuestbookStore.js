@@ -2,11 +2,9 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/store/JsonRest",
-	"dojo/store/Cache",
 	"dojo/store/Memory",
-	"dojo/store/Observable",
 	"dojo/cookie"
-], function(declare, lang, JsonRest, Cache, Memory, _cookie) {
+], function(declare, lang, JsonRest, Memory, _cookie) {
 	return declare('GuestbookStore', [], {
 		guestbookStore : null,
 		target: "/guestbookapp/api/guestbook/{0}/greeting/",
@@ -19,10 +17,6 @@ define([
 				{ target: this.target, headers: {"X-CSRFToken": _cookie('csrftoken')}}
 			);
 			this.guestbookStore = GuestbookJsonRestStore;
-		},
-
-		postCreate: function(){
-			this.inherited(arguments);
 		},
 
 		getGreetings: function() {

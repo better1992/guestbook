@@ -40,7 +40,7 @@ define([
 
 			this.own(
 				on(this.get_listNode, "click", lang.hitch(this, "getList")),
-				on(this.signNode, "click", lang.hitch(this, "signGreeting")),
+				on(this.signNode, "click", lang.hitch(this, "sign")),
 				on(this.delete_allNode, "click", lang.hitch(this, "deleteAll")),
 				on(this.ok_detailNode, "click", lang.hitch(this, "hidePopup"))
 			);
@@ -80,7 +80,7 @@ define([
 		},
 
 
-		signGreeting: function() {
+		sign: function() {
 			postData = {
 					guestbook_name: this.guestbook_nameNode.get('value'),
 					greeting_message: this.content_dialog_signNode.get('value')
