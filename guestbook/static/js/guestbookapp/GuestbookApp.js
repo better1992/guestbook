@@ -5,6 +5,7 @@ require([
 		"dojo/domReady!"],
 	function(dom, GuestbookWidget, GuestbookStore){
 		var guestbook = dom.byId("Guestbook");
-		widget = new GuestbookWidget().placeAt(guestbook);
+		widget = new GuestbookWidget()
+		widget.placeAt(guestbook);
 		widget.startup();
 	});
