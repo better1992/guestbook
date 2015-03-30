@@ -2,11 +2,13 @@
     <div>
         <table>
             <tr><td>Guestbook name: <td>
-                <td><input data-dojo-attach-point="guestbook_nameNode" id="guestbook" data-dojo-type="dijit/form/TextBox" value="${guestbook_name}" required="true" /></td>
+                <td><input data-dojo-attach-point="guestbook_nameNode" id="guestbook"
+                           data-dojo-type="dijit/form/TextBox" value="${guestbook_name}" required="true" /></td>
                 <td><button data-dojo-attach-point="get_listNode" data-dojo-type="dijit/form/Button" >Get List of Greeting</button></td>
                 <td><button data-dojo-attach-point="show_dialogNode" data-dojo-type="dijit/form/Button" type="button" onClick="myDialog.show();">
             Sign new Greeting</button></td>
-                 <td><div data-dojo-attach-point="delete_divNode" style="display: None" ><button data-dojo-attach-point="delete_allNode" data-dojo-type="dijit/form/Button" type="button" >
+                 <td><div data-dojo-attach-point="delete_divNode" style="display: None" >
+                     <button data-dojo-attach-point="delete_allNode" data-dojo-type="dijit/form/Button" type="button" >
             Delete All</button></div></td>
             </tr>
         </table>
@@ -14,7 +16,6 @@
 
         <div data-dojo-type="dijit/Dialog" data-dojo-id="myDialog" title="New Greeting">
             <table class="dijitDialogPaneContentArea">
-
                 <tr>
                     <td><label for="content_new_greeting">Content:</label></td>
                     <td><input data-dojo-attach-point="content_dialog_signNode" data-dojo-type="dijit/form/TextBox" name="content_dialog" ></td>

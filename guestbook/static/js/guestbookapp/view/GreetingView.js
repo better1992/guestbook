@@ -14,10 +14,11 @@ define([
 		"dijit/form/ValidationTextBox",
 		"dijit/form/Button",
 		"dijit/form/Form",
+		"dijit/InlineEditBox",
 		"dijit/Dialog",
 		"dijit/form/TextBox",
 		"guestbookapp/view/_ViewBaseMixin",
-	   ], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox, button, form, dialog, textbox, _ViewBaseMixin){
+	   ], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox, button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
 	return declare("greetingWidget",[_ViewBaseMixin], {
 		//	set our template
 		templateString: template,
@@ -47,10 +48,9 @@ define([
 			}
             this.own(
 				on(this.deleteNode, 'click', lang.hitch(this, 'deleteWidget')),
-				on(this.show_EditNode, 'click', lang.hitch(this, 'showEdit')),
-				on(this.Cancel_EditNode, 'click', lang.hitch(this, 'cancelEdit')),
-				on(this.Ok_EditNode, 'click', lang.hitch(this, 'okEdit')),
-				on(this.show_detailNode, 'click', lang.hitch(this, 'showDetail'))
+				//on(this.show_EditNode, 'click', lang.hitch(this, 'showEdit')),
+				on(this.show_detailNode, 'click', lang.hitch(this, 'showDetail')),
+				on(this.contentNode, 'change', lang.hitch(this, 'okEdit'))
 			);
 		},
 
@@ -60,15 +60,16 @@ define([
 
         },
 		showEdit: function(){
-				this.contentNode.set('readonly', false);
-				dojo.style(this.optionNode, 'display', 'None');
-				dojo.style(this.edit_optionNode, 'display', '');
+				//this.contentNode.set('readonly', false);
+				//dojo.style(this.optionNode, 'display', 'None');
+				//dojo.style(this.edit_optionNode, 'display', '');
+				//this.own(on(this.contentNode, 'click', lang.hitch(this)));
 		},
 
 		cancelEdit: function(){
-				this.contentNode.set('readonly', true);
-				dojo.style(this.edit_optionNode, 'display', 'None');
-				dojo.style(this.optionNode, 'display', '');
+				//this.contentNode.set('readonly', true);
+				//dojo.style(this.edit_optionNode, 'display', 'None');
+				//dojo.style(this.optionNode, 'display', '');
 		},
 
 		okEdit : function() {
