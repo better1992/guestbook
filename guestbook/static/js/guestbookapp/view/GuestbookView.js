@@ -36,18 +36,22 @@ define([
 
 		postCreate: function(){
 			this.inherited(arguments);
-
+			this.getList();
 
 			this.own(
-				on(this.get_listNode, "click", lang.hitch(this, "getList")),
-				on(this.signNode, "click", lang.hitch(this, "sign")),
-				on(this.delete_allNode, "click", lang.hitch(this, "deleteAll")),
-				on(this.ok_detailNode, "click", lang.hitch(this, "hidePopup"))
+				on(this.getListButton, "click", lang.hitch(this, "getList")),
+				on(this.signButton, "click", lang.hitch(this, "sign")),
+				on(this.showSignButton, "click", lang.hitch(this, "showSign")),
+				on(this.deleteAllButton, "click", lang.hitch(this, "deleteAll")),
+				on(this.cancelButton, "click", lang.hitch(this, "hideSign"))
 			);
 		},
 
 		getList: function() {
-			this.deleteAll();
+			dojo.query('.greetingWidget').forEach(function(node){
+				dijit.byNode(node).destroyRecursive(); // destroy ID
+				domConstruct.destroy(node); // destroy innerHTML
+			});
 			var guestbook_name = dijit.byId('guestbook').get('value');
 			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
@@ -60,32 +64,42 @@ define([
 							guestbook_name: guestbook_name,
 							id: greeting.id,
 							author: greeting.author,
-							content: greeting.content
+							content: greeting.content,
+							updateDate: greeting.updatedDate,
+							updateBy: greeting.updatedBy,
+							dateCreated: greeting.dateCreated
 						}
 						var widget = new GreetingView(data);
 						widget.placeAt(greetings)
 						widget.startup();
 						console.log(this.greetings);
 					}));
-					if(config.isAdmin) {
-						dojo.style(this.delete_divNode, 'display', '');
+					if(config.isAdmin == "True") {
+						dojo.style(this.deleteDivNode, 'display', '');
 					}
 				}
 			}));
 
 		},
 
-		hidePopup: function(){
-			this.detail_dialogNode.hide();
+		hideSign: function(){
+			dojo.style(this.signOptionNode, 'display', 'None');
 		},
 
+		showSign: function() {
+			dojo.style(this.signOptionNode, 'display', '');
+		},
 
 		sign: function() {
 			postData = {
-					guestbook_name: this.guestbook_nameNode.get('value'),
-					greeting_message: this.content_dialog_signNode.get('value')
+					guestbook_name: this.guestbookNameTextbox.get('value'),
+					greeting_message: this.contentSignTextbox.get('value')
 				}
-			this.guestbookStore.signGreeting(postData);
+			this.guestbookStore.signGreeting(postData).then(lang.hitch(this, function(){
+				this.getList();
+			}));
+			dojo.style(this.signOptionNode, 'display', 'None');
+
 		},
 
 		deleteAll: function() {

@@ -2,19 +2,17 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/store/JsonRest",
-	"dojo/store/Memory",
 	"dojo/cookie"
-], function(declare, lang, JsonRest, Memory, _cookie) {
+], function(declare, lang, JsonRest, cookie) {
 	return declare('GuestbookStore', [], {
 		guestbookStore : null,
 		target: "/guestbookapp/api/guestbook/{0}/greeting/",
 
 		constructor: function (data) {
 			this.guestbook_name = data.guestbook_name;
-			var GuestbookMemoryStore = new Memory();
 			this.target = lang.replace(this.target, [this.guestbook_name]);
 			var GuestbookJsonRestStore = new JsonRest(
-				{ target: this.target, headers: {"X-CSRFToken": _cookie('csrftoken')}}
+				{ target: this.target, headers: {"X-CSRFToken": cookie('csrftoken')}}
 			);
 			this.guestbookStore = GuestbookJsonRestStore;
 		},
@@ -28,7 +26,7 @@ define([
 		},
 
 		putGreeting: function(data) {
-			this.guestbookStore.put(data);
+			return this.guestbookStore.put(data);
 		},
 
 		deleteGreeting: function(id) {
@@ -36,7 +34,7 @@ define([
 		},
 
 		signGreeting: function(data) {
-			this.guestbookStore.add(data);
+			return this.guestbookStore.add(data);
 		}
 
 	});

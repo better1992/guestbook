@@ -104,9 +104,9 @@ class Greeting(ndb.Model):
 			'id': self.key.id(),
 			'author': author,
 			'content': str(self.content),
-			'date': str(self.date),
-			'updated_by': str(self.update_by),
-			'updated_date': str(self.update_date),
+			'dateCreated': str(self.date),
+			'updatedBy': str(self.update_by),
+			'updatedDate': str(self.update_date),
 		}
 		return item
 

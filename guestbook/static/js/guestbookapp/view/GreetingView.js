@@ -1,24 +1,24 @@
 define([
-		"dojo/_base/declare",
-		"dojo/_base/lang",
-		"dojo/_base/config",
-		"dojo/dom",
-		"dojo/dom-attr",
-		"dojo/dom-style",
-		"dojo/cookie",
-	    "dojo/when",
-		"dojo/request",
-		"dojo/on",
-		"dojo/store/Memory",
-		"dojo/text!./templates/GreetingView.html",
-		"dijit/form/ValidationTextBox",
-		"dijit/form/Button",
-		"dijit/form/Form",
-		"dijit/InlineEditBox",
-		"dijit/Dialog",
-		"dijit/form/TextBox",
-		"guestbookapp/view/_ViewBaseMixin",
-	   ], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox, button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/_base/config",
+	"dojo/dom",
+	"dojo/dom-attr",
+	"dojo/dom-style",
+	"dojo/cookie",
+	"dojo/when",
+	"dojo/request",
+	"dojo/on",
+	"dojo/store/Memory",
+	"dojo/text!./templates/GreetingView.html",
+	"dijit/form/ValidationTextBox",
+	"dijit/form/Button",
+	"dijit/form/Form",
+	"dijit/InlineEditBox",
+	"dijit/Dialog",
+	"dijit/form/TextBox",
+	"guestbookapp/view/_ViewBaseMixin",
+], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox, button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
 	return declare("greetingWidget",[_ViewBaseMixin], {
 		//	set our template
 		templateString: template,
@@ -30,73 +30,52 @@ define([
 		guestbook_name: '',
 		guestbookStore: null,
 		guestbookWidget: null,
+		updateBy: '',
+		updateDate: '',
+		dateCreated: null,
 
-        constructor: function (params) {
-			this.guestbookWidget = params.guestbookWidget
-			this.guestbook_name = params.guestbook_name,
-            this.author = params.author;
-            this.content = params.content;
+		constructor: function (params) {
+			this.guestbook_name = params.guestbook_name;
+			this.author = params.author;
+			this.content = params.content;
 			this.id = params.id;
-			this.guestbookStore = this.guestbookWidget.guestbookStore
-        },
+			this.guestbookWidget = params.guestbookWidget;
+			this.guestbookStore = params.guestbookWidget.guestbookStore;
+			this.dateCreated = params.dateCreated;
+			this.updateDate = 'Updated date: ' + params.updateDate
+			this.updateBy = 'Update By: ' + params.updateBy;
 
-		postCreate: function(){
+		},
+
+		postCreate: function() {
 			this.inherited(arguments);
 
 			if (config.isAdmin == 0){
 				dojo.style(this.optionNode, 'display', 'None');
 			}
-            this.own(
-				on(this.deleteNode, 'click', lang.hitch(this, 'deleteWidget')),
-				//on(this.show_EditNode, 'click', lang.hitch(this, 'showEdit')),
-				on(this.show_detailNode, 'click', lang.hitch(this, 'showDetail')),
-				on(this.contentNode, 'change', lang.hitch(this, 'okEdit'))
+			this.own(
+				on(this.deleteButton, 'click', lang.hitch(this, 'deleteWidget')),
+				on(this.contentEditbox, 'change', lang.hitch(this, 'okEdit'))
 			);
 		},
 
-        deleteWidget: function(){
-            this.guestbookStore.deleteGreeting(this.id);
+		deleteWidget: function(){
+			this.guestbookStore.deleteGreeting(this.id);
 			this.destroyRecursive();
 
-        },
-		showEdit: function(){
-				//this.contentNode.set('readonly', false);
-				//dojo.style(this.optionNode, 'display', 'None');
-				//dojo.style(this.edit_optionNode, 'display', '');
-				//this.own(on(this.contentNode, 'click', lang.hitch(this)));
-		},
-
-		cancelEdit: function(){
-				//this.contentNode.set('readonly', true);
-				//dojo.style(this.edit_optionNode, 'display', 'None');
-				//dojo.style(this.optionNode, 'display', '');
 		},
 
 		okEdit : function() {
-			this.cancelEdit();
 			putData = {
-					id: this.id,
-					updated_by: config.currentUser,
-					guestbook_name: this.guestbook_name,
-					greeting_message: this.contentNode.get('value')
-				}
-			this.guestbookStore.putGreeting(putData);
-
-		},
-
-		showDetail: function() {
-			this.guestbookStore.getGreeting(this.id).then(lang.hitch(this, function (greeting) {
-				this.guestbookWidget.IDNode.innerHTML = greeting['object'].id;
-				this.guestbookWidget.guestbook_name_dialogNode.innerHTML = greeting['object'].guestbook_name;
-				this.guestbookWidget.author_dialogNode.innerHTML = greeting['object'].author;
-				this.guestbookWidget.content_dialogNode.innerHTML = greeting['object'].content;
-				this.guestbookWidget.date_dialogNode.innerHTML = greeting['object'].date;
-				this.guestbookWidget.updated_by_dialogNode.innerHTML = greeting['object'].updated_by;
-				this.guestbookWidget.updated_date_dialogNode.innerHTML = greeting['object'].updated_date;
+				id: this.id,
+				updated_by: config.currentUser,
+				guestbook_name: this.guestbook_name,
+				greeting_message: this.contentEditbox.get('value')
+			}
+			this.guestbookStore.putGreeting(putData).then(lang.hitch(this, function(){
+				this.guestbookWidget.getList();
 			}));
-			this.guestbookWidget.detail_dialogNode.show();
+
 		}
-
-
 	});
 });
