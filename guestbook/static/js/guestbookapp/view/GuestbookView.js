@@ -25,13 +25,13 @@ define([
 
 		//	some properties
 		guestbookStore: null,
-		guestbookName : 'temp_guestbook',
+		guestbook_name : 'temp_guestbook',
 		greetings: [],
 
 		constructor: function (params) {
-			this.guestbookName = config.guestbookName;
-			//var guestbookName = this.guestbookName;
-			this.guestbookStore = new GuestbookStore({'guestbookName': this.guestbookName });
+			this.guestbook_name = config.guestbook_name;
+			//var guestbook_name = this.guestbook_name;
+			this.guestbookStore = new GuestbookStore({'guestbook_name': this.guestbook_name });
 		},
 
 		postCreate: function(){
@@ -52,7 +52,7 @@ define([
 				dijit.byNode(node).destroyRecursive(); // destroy ID
 				domConstruct.destroy(node); // destroy innerHTML
 			});
-			var guestbookName = dijit.byId('guestbook').get('value');
+			var guestbook_name = dijit.byId('guestbook').get('value');
 			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
 				var list = result['object_list']['greetings'];
@@ -62,7 +62,7 @@ define([
 
 						data = {
 							guestbookWidget: this,
-							guestbookName: guestbookName,
+							guestbook_name: guestbook_name,
 							id: greeting.id,
 							author: greeting.author,
 							content: greeting.content,
@@ -94,7 +94,7 @@ define([
 
 		sign: function() {
 			postData = {
-				guestbookName: this.guestbookNameTextbox.get('value'),
+				guestbook_name: this.guestbookNameTextbox.get('value'),
 				greeting_message: this.contentSignTextbox.get('value')
 			}
 			this.guestbookStore.signGreeting(postData).then(lang.hitch(this, function(){

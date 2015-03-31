@@ -28,7 +28,7 @@ define([
 		id: 123,
 		author: 'test@gmail.com',
 		content: 'demo',
-		guestbookName: '',
+		guestbook_name: '',
 		guestbookStore: null,
 		guestbookWidget: null,
 		updateBy: '',
@@ -36,7 +36,7 @@ define([
 		dateCreated: null,
 
 		constructor: function (params) {
-			this.guestbookName = params.guestbookName;
+			this.guestbook_name = params.guestbook_name;
 			this.author = params.author;
 			this.content = params.content;
 			this.id = params.id;
@@ -70,7 +70,7 @@ define([
 			putData = {
 				id: this.id,
 				updated_by: config.currentUser,
-				guestbookName: this.guestbookName,
+				guestbook_name: this.guestbook_name,
 				greeting_message: this.contentEditbox.get('value')
 			}
 			this.guestbookStore.putGreeting(putData).then(lang.hitch(this, function(){

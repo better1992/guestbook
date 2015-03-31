@@ -10,7 +10,7 @@ from google.appengine.ext.db import Error
 
 class AppConstants(object):
 	@property
-	def get_default_guestbookName(self):
+	def get_default_guestbook_name(self):
 		return "demo"
 
 
@@ -19,33 +19,33 @@ class GuestBook(ndb.Model):
 	name = ndb.StringProperty(indexed=True)
 
 	@staticmethod
-	def get_guestbook(guestbookName):
+	def get_guestbook(guestbook_name):
 		try:
-			return GuestBook.query(GuestBook.name == guestbookName).get()
+			return GuestBook.query(GuestBook.name == guestbook_name).get()
 		except (RuntimeError, ValueError):
 			return None
 
 	@staticmethod
-	def add_guestbook(guestbookName):
+	def add_guestbook(guestbook_name):
 		try:
 			guestbook = GuestBook()
-			guestbook.name = guestbookName
+			guestbook.name = guestbook_name
 			guestbook.put()
 			return True
 		except (RuntimeError, TypeError):
 			return False
 
 
-def get_guestbook_key(guestbookName=AppConstants().get_default_guestbookName):
-	return ndb.Key('GuestBook', guestbookName)
+def get_guestbook_key(guestbook_name=AppConstants().get_default_guestbook_name):
+	return ndb.Key('GuestBook', guestbook_name)
 
 
-def is_exist(guestbookName):
+def is_exist(guestbook_name):
 	"""
 
 	:rtype : Guestbook
 	"""
-	if GuestBook.get_guestbook(guestbookName) is None:
+	if GuestBook.get_guestbook(guestbook_name) is None:
 		return False
 	else:
 		return True
@@ -60,33 +60,33 @@ class Greeting(ndb.Model):
 	update_date = ndb.DateTimeProperty(auto_now_add=False)
 
 	@classmethod
-	def get_latest(cls, guestbookName, count, cursor):
+	def get_latest(cls, guestbook_name, count, cursor):
 		"""
- 
+
 		 :type cls: Greeting
 		 """
 		curs = Cursor(urlsafe=cursor)
-		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbookName)).order(
+		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(
 			-Greeting.date).fetch_page(
 			count, start_cursor=curs)
 		return greets, next_curs, more
 
 	@classmethod
-	def get_greeting(cls, guestbookName, greeting_id):
+	def get_greeting(cls, guestbook_name, greeting_id):
 		return cls.query(
-			cls.key == ndb.Key("GuestBook", str(guestbookName), "Greeting",
+			cls.key == ndb.Key("GuestBook", str(guestbook_name), "Greeting",
 							   int(greeting_id))).get()
 
 	@classmethod
 	def put_from_dict(cls, dictionary):
-		guestbookName = dictionary.get("guestbookName")
-		if not guestbookName:
+		guestbook_name = dictionary.get("guestbook_name")
+		if not guestbook_name:
 			return False
 		else:
 			try:
-				if is_exist(guestbookName) is False:
-					GuestBook.add_guestbook(guestbookName)
-				greeting = cls(parent=get_guestbook_key(guestbookName))
+				if is_exist(guestbook_name) is False:
+					GuestBook.add_guestbook(guestbook_name)
+				greeting = cls(parent=get_guestbook_key(guestbook_name))
 				if users.get_current_user():
 					greeting.author = users.get_current_user()
 				greeting.content = dictionary.get("greeting_message")
@@ -115,10 +115,10 @@ class Greeting(ndb.Model):
 		try:
 			greeting_id = dictionary["id"]
 			greeting_content = dictionary["content"]
-			guestbookName = dictionary["guestbookName"]
+			guestbook_name = dictionary["guestbook_name"]
 			updated_by = dictionary['updated_by']
 			greeting = cls.query(
-				Greeting.key == ndb.Key("GuestBook", guestbookName, "Greeting",
+				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
 										int(greeting_id))).get()
 			greeting.update_by = updated_by
 			greeting.update_date = datetime.datetime.now()
@@ -131,9 +131,9 @@ class Greeting(ndb.Model):
 	@classmethod
 	def delete_greeting(cls, dictionary):
 		greeting_id = dictionary.get("id")
-		guestbookName = dictionary.get("guestbookName")
+		guestbook_name = dictionary.get("guestbook_name")
 		try:
-			greeting = cls.query(ndb.Key("GuestBook", guestbookName, "Greeting",
+			greeting = cls.query(ndb.Key("GuestBook", guestbook_name, "Greeting",
 										 int(greeting_id)) == Greeting.key).get()
 			if greeting is None:
 				return False

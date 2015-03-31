@@ -27,9 +27,9 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 	# handle GET request: get list messages and return as JSON
 	def get_queryset(self):
 		cursor = self.request.GET.get("cursor", None)
-		guestbookName = self.kwargs.get("guestbookName")
+		guestbook_name = self.kwargs.get("guestbook_name")
 
-		greetings, next_cursor, more = Greeting.get_latest(guestbookName, 20, cursor)
+		greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
 		if greetings is None:
 			return HttpResponse(status=404)
 		lst_greeting = [greeting.to_dict() for greeting in greetings]
@@ -40,7 +40,7 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 			next_cursor_url = str(next_cursor.urlsafe())
 
 		data = {
-			"guestbookName": guestbookName,
+			"guestbook_name": guestbook_name,
 			"greetings": lst_greeting,
 			"more": more,
 			"next_cursor": next_cursor_url
@@ -58,11 +58,11 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 			# valid json
 			request.POST = json_object
 
-		guestbookName = kwargs.get('guestbookName')
-		if (guestbookName is None) | (request.POST.get('greeting_message') is None):
+		guestbook_name = kwargs.get('guestbook_name')
+		if (guestbook_name is None) | (request.POST.get('greeting_message') is None):
 			return HttpResponse(status=400)
 		dict_parameter = {
-			'guestbookName': guestbookName,
+			'guestbook_name': guestbook_name,
 			'greeting_message': request.POST.get('greeting_message')
 		}
 
@@ -73,9 +73,9 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 
 	# @staticmethod
 	# def form_valid(form):
-	# 	guestbookName = form.cleaned_data.get('guestbookName')
+	# 	guestbook_name = form.cleaned_data.get('guestbook_name')
 	# 	dict_parameter = {
-	# 		'guestbookName': guestbookName,
+	# 		'guestbook_name': guestbook_name,
 	# 		'greeting_message': form.cleaned_data.get('greeting_message')
 	# 	}
 	# 	if Greeting.put_from_dict(dict_parameter):
@@ -93,14 +93,14 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
 	# handle GET request: get a message and return HttpStatus code
 	def get_object(self):
 		greeting_id = self.kwargs.get("id")
-		guestbookName = self.kwargs.get("guestbookName")
+		guestbook_name = self.kwargs.get("guestbook_name")
 
-		greeting = Greeting.get_greeting(guestbookName, greeting_id)
+		greeting = Greeting.get_greeting(guestbook_name, greeting_id)
 		if greeting is None:
 			return Http404
 
 		data = greeting.to_dict()
-		data['guestbookName'] = guestbookName
+		data['guestbook_name'] = guestbook_name
 		return data
 
 	# handle PUT request: Edit a message and return HttpStatus code
@@ -115,7 +115,7 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
 			request.PUT = json.loads(request.body)
 
 		dict_parameter = {
-			'guestbookName': self.kwargs.get("guestbookName"),
+			'guestbook_name': self.kwargs.get("guestbook_name"),
 			'id': self.kwargs.get("id"),
 			'content': request.PUT.get("greeting_message"),
 			'updated_by': request.PUT.get('updated_by'),
@@ -131,7 +131,7 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
 	def delete(self, request, *args, **kwargs):
 		dict_parameter = {
 			'id': kwargs.get("id"),
-			'guestbookName': kwargs.get("guestbookName")
+			'guestbook_name': kwargs.get("guestbook_name")
 		}
 
 		if Greeting.delete_greeting(dict_parameter):
