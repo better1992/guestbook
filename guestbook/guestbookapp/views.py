@@ -14,10 +14,10 @@ class MainView(TemplateView):
 	template_name = "main_page.html"
 
 	def get_context_data(self):
-		guestbook_name = self.request.GET.get('guestbook_name',
-											  AppConstants().get_default_guestbook_name)
+		guestbookName = self.request.GET.get('guestbookName',
+											  AppConstants().get_default_guestbookName)
 		cursor = self.request.GET.get("cursor", None)
-		greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
+		greetings, next_cursor, more = Greeting.get_latest(guestbookName, 20, cursor)
 
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.get_full_path())
@@ -32,14 +32,14 @@ class MainView(TemplateView):
 			'url_linktext': url_linktext,
 			'isAdmin': users.is_current_user_admin(),
 			'currentUser': users.get_current_user(),
-			'guestbook_name': guestbook_name
+			'guestbookName': guestbookName
 		}
 
 		return template_values
 
 
 class SignForm(forms.Form):
-	guestbook_name = forms.CharField(
+	guestbookName = forms.CharField(
 		label="Guestbook Name",
 		max_length=10,
 		required=True,
@@ -59,9 +59,9 @@ class SignView(FormView):
 	form_class = SignForm
 
 	def form_valid(self, form):
-		guestbook_name = form.cleaned_data['guestbook_name']
+		guestbookName = form.cleaned_data['guestbookName']
 		if Greeting.put_from_dict(form.cleaned_data):
-			return redirect("/?guestbook_name=" + guestbook_name)
+			return redirect("/?guestbookName=" + guestbookName)
 		else:
 			return render_to_response(self.template_name, {'error': 'Have something wrong!'},
 									  RequestContext(self.request))
@@ -75,10 +75,10 @@ class GreetingEditView(FormView):
 		initial = super(GreetingEditView, self).get_initial()
 
 		greeting_id = self.request.GET.get("id")
-		guestbook_name = self.request.GET.get("guestbook_name")
-		if guestbook_name:
-			greeting = Greeting.get_greeting(guestbook_name, greeting_id)
-			initial["guestbook_name"] = guestbook_name
+		guestbookName = self.request.GET.get("guestbookName")
+		if guestbookName:
+			greeting = Greeting.get_greeting(guestbookName, greeting_id)
+			initial["guestbookName"] = guestbookName
 			initial["greeting_message"] = greeting.content
 			try:
 				initial["greeting_id"] = int(greeting_id)
@@ -87,9 +87,9 @@ class GreetingEditView(FormView):
 		return initial
 
 	def form_valid(self, form):
-		guestbook_name = form.cleaned_data['guestbook_name']
+		guestbookName = form.cleaned_data['guestbookName']
 		if Greeting.edit_greeting(form.cleaned_data):
-			return redirect("/?guestbook_name=" + guestbook_name)
+			return redirect("/?guestbookName=" + guestbookName)
 		else:
 			return render_to_response(self.template_name,
 									  {'error': 'Have something wrong!'},
@@ -99,23 +99,23 @@ class GreetingEditView(FormView):
 class GreetingDeleteView(View):
 	def get(self, request):
 		dictionary = request.GET
-		guestbook_name = dictionary.get("guestbook_name")
+		guestbookName = dictionary.get("guestbookName")
 		if Greeting.delete_greeting(dictionary):
 			return render_to_response('main_page.html',
 									  {'error': 'Have something wrong!'},
 									  RequestContext(self.request))
 		else:
-			return redirect("/?guestbook_name=" + guestbook_name)
+			return redirect("/?guestbookName=" + guestbookName)
 
 
 class DojoView(TemplateView):
 	template_name = 'dojo.html'
 
 	def get_context_data(self):
-		guestbook_name = self.request.GET.get('guestbook_name',
-											  AppConstants().get_default_guestbook_name)
+		guestbookName = self.request.GET.get('guestbookName',
+											  AppConstants().get_default_guestbookName)
 		#cursor = self.request.GET.get("cursor", None)
-		#greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
+		#greetings, next_cursor, more = Greeting.get_latest(guestbookName, 20, cursor)
 
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.get_full_path())
@@ -129,7 +129,7 @@ class DojoView(TemplateView):
 			'url_linktext': url_linktext,
 			'isAdmin': users.is_current_user_admin(),
 			'currentUser': users.get_current_user(),
-		    'guestbook_name': guestbook_name
+		    'guestbookName': guestbookName
 		}
 
 		return template_values
