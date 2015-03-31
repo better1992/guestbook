@@ -19,7 +19,7 @@ define([
 	"dijit/form/TextBox",
 	"guestbookapp/view/_ViewBaseMixin",
 ], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox,
-            button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
+			button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
 	return declare("greetingWidget",[_ViewBaseMixin], {
 		//	set our template
 		templateString: template,
