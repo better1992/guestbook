@@ -10,10 +10,10 @@
   {{ greeting.content|escape }} at {{ greeting.date }}
    {% if currentUser %}
    		{% if isAdmin %}
-  			<span><a href="{% url 'edit' %}?id={{ greeting.key.id }}&guestbook_name={{ guestbook_name }}"><input  type="button" value='Edit'/></a>&nbsp;<a href="{% url 'delete' %}?id={{greeting.key.id}}&guestbook_name={{ guestbook_name}}"><input  type="button" value='Delete'/></a></span>
+  			<span><a href="{% url 'edit' %}?id={{ greeting.key.id }}&guestbookName={{ guestbookName }}"><input  type="button" value='Edit'/></a>&nbsp;<a href="{% url 'delete' %}?id={{greeting.key.id}}&guestbookName={{ guestbookName}}"><input  type="button" value='Delete'/></a></span>
    		{% else %}
    			{% if currentUser == greeting.author %}
-   				<a href="{% url 'edit' %}?id={{ greeting.key.id }}&guestbook_name={{ guestbook_name }}"><input  type="button" value='Edit'/></a>
+   				<a href="{% url 'edit' %}?id={{ greeting.key.id }}&guestbookName={{ guestbookName }}"><input  type="button" value='Edit'/></a>
    			{% endif %}
    		{% endif %}
    	{% endif %}
@@ -26,7 +26,7 @@
 
  <form method="GET" action='/'>Guestbook name:
      <label>
-         <input value="{{ guestbook_name }}" name="guestbook_name">
+         <input value="{{ guestbookName }}" name="guestbookName">
      </label>
      <input type="submit" value="switch">
     </form>
