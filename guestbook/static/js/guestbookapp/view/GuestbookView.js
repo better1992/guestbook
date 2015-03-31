@@ -17,8 +17,8 @@ define([
 	"guestbookapp/view/GreetingView",
 	"guestbookapp/view/_ViewBaseMixin",
 	"dojo/domReady!"
-	   ], function(declare, lang, array, config, dom, domConstruct, on, template, contentpane,  validtextbox, button, form,
-				     dialog, textbox, GuestbookStore, GreetingView, _ViewBaseMixin){
+], function(declare, lang, array, config, dom, domConstruct, on, template, contentpane,  validtextbox, button, form,
+			dialog, textbox, GuestbookStore, GreetingView, _ViewBaseMixin){
 	return declare('guestbookWidget', [_ViewBaseMixin], {
 		//	set our template
 		templateString: template,
@@ -29,7 +29,7 @@ define([
 		greetings: [],
 
 		constructor: function (params) {
-            this.guestbook_name = config.guestbook_name;
+			this.guestbook_name = config.guestbook_name;
 			//var guestbook_name = this.guestbook_name;
 			this.guestbookStore = new GuestbookStore({'guestbook_name': this.guestbook_name });
 		},
@@ -92,9 +92,9 @@ define([
 
 		sign: function() {
 			postData = {
-					guestbook_name: this.guestbookNameTextbox.get('value'),
-					greeting_message: this.contentSignTextbox.get('value')
-				}
+				guestbook_name: this.guestbookNameTextbox.get('value'),
+				greeting_message: this.contentSignTextbox.get('value')
+			}
 			this.guestbookStore.signGreeting(postData).then(lang.hitch(this, function(){
 				this.getList();
 			}));

@@ -1,19 +1,19 @@
 <div class="${baseClass}">
-            <span data-dojo-attach-point="authorNode">${author} wrote: </span>
-            <span data-dojo-attach-point="contentEditbox" data-dojo-type="dijit/InlineEditBox"
-			data-dojo-props="editor:'dijit/form/ValidationTextBox',
+    <span data-dojo-attach-point="authorNode">${author} wrote: </span>
+			<span data-dojo-attach-point="contentEditbox" data-dojo-type="dijit/InlineEditBox"
+                  data-dojo-props="editor:'dijit/form/ValidationTextBox',
 				editorParams:{required: 'true', regExp:'.{1,10}', invalidMessage:'Max length 10 characters!'}"
-			autoSave="false">${content}</span>
+                  autoSave="false">${content}</span>
 
-         <button data-dojo-attach-point="deleteButton"  data-dojo-type="dijit/form/Button" type="button">
-    Delete</button>
-        </span>
+    <button data-dojo-attach-point="deleteButton"  data-dojo-type="dijit/form/Button" type="button">
+        Delete</button>
+    </span>
 
     <div data-dojo-attach-point="detailDivNode" >
-                <span data-dojo-attach-point="idNode">ID: ${id}</span>&nbsp;&nbsp;
-                <span data-dojo-attach-point="dateCreatedNode">Date Created: ${dateCreated}</span>&nbsp;&nbsp;
-                <span data-dojo-attach-point="updateByNode">Updated By: ${updateBy}</span>&nbsp;&nbsp;
-                <span data-dojo-attach-point="updateDateNode">Updated Date: ${updateDate}</span>&nbsp;&nbsp;
+        <span data-dojo-attach-point="idNode">ID: ${id}</span>&nbsp;&nbsp;
+        <span data-dojo-attach-point="dateCreatedNode">Date Created: ${dateCreated}</span>&nbsp;&nbsp;
+        <span data-dojo-attach-point="updateByNode">Updated By: ${updateBy}</span>&nbsp;&nbsp;
+        <span data-dojo-attach-point="updateDateNode">Updated Date: ${updateDate}</span>&nbsp;&nbsp;
     </div>
     </br>
     </br>
