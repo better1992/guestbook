@@ -56,6 +56,7 @@ define([
 			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
 				var list = result['object_list']['greetings'];
+				var domFrag = document.createDocumentFragment();
 				if (list.length > 0){
 					array.forEach(list, lang.hitch(this, function(greeting, i){
 
@@ -70,7 +71,7 @@ define([
 							dateCreated: greeting.dateCreated
 						}
 						var widget = new GreetingView(data);
-						widget.placeAt(greetings)
+						widget.placeAt(domFrag);
 						widget.startup();
 						console.log(this.greetings);
 					}));
