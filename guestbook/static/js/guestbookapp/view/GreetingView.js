@@ -18,7 +18,8 @@ define([
 	"dijit/Dialog",
 	"dijit/form/TextBox",
 	"guestbookapp/view/_ViewBaseMixin",
-], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox, button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
+], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox,
+            button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
 	return declare("greetingWidget",[_ViewBaseMixin], {
 		//	set our template
 		templateString: template,
@@ -27,7 +28,7 @@ define([
 		id: 123,
 		author: 'test@gmail.com',
 		content: 'demo',
-		guestbook_name: '',
+		guestbookName: '',
 		guestbookStore: null,
 		guestbookWidget: null,
 		updateBy: '',
@@ -35,7 +36,7 @@ define([
 		dateCreated: null,
 
 		constructor: function (params) {
-			this.guestbook_name = params.guestbook_name;
+			this.guestbookName = params.guestbookName;
 			this.author = params.author;
 			this.content = params.content;
 			this.id = params.id;
@@ -69,7 +70,7 @@ define([
 			putData = {
 				id: this.id,
 				updated_by: config.currentUser,
-				guestbook_name: this.guestbook_name,
+				guestbookName: this.guestbookName,
 				greeting_message: this.contentEditbox.get('value')
 			}
 			this.guestbookStore.putGreeting(putData).then(lang.hitch(this, function(){

@@ -10,7 +10,7 @@ from google.appengine.ext.db import Error
 
 class AppConstants(object):
 	@property
-	def get_default_guestbook_name(self):
+	def get_default_guestbookName(self):
 		return "demo"
 
 
@@ -19,33 +19,33 @@ class GuestBook(ndb.Model):
 	name = ndb.StringProperty(indexed=True)
 
 	@staticmethod
-	def get_guestbook(guestbook_name):
+	def get_guestbook(guestbookName):
 		try:
-			return GuestBook.query(GuestBook.name == guestbook_name).get()
+			return GuestBook.query(GuestBook.name == guestbookName).get()
 		except (RuntimeError, ValueError):
 			return None
 
 	@staticmethod
-	def add_guestbook(guestbook_name):
+	def add_guestbook(guestbookName):
 		try:
 			guestbook = GuestBook()
-			guestbook.name = guestbook_name
+			guestbook.name = guestbookName
 			guestbook.put()
 			return True
 		except (RuntimeError, TypeError):
 			return False
 
 
-def get_guestbook_key(guestbook_name=AppConstants().get_default_guestbook_name):
-	return ndb.Key('GuestBook', guestbook_name)
+def get_guestbook_key(guestbookName=AppConstants().get_default_guestbookName):
+	return ndb.Key('GuestBook', guestbookName)
 
 
-def is_exist(guestbook_name):
+def is_exist(guestbookName):
 	"""
 
 	:rtype : Guestbook
 	"""
-	if GuestBook.get_guestbook(guestbook_name) is None:
+	if GuestBook.get_guestbook(guestbookName) is None:
 		return False
 	else:
 		return True
@@ -60,33 +60,33 @@ class Greeting(ndb.Model):
 	update_date = ndb.DateTimeProperty(auto_now_add=False)
 
 	@classmethod
-	def get_latest(cls, guestbook_name, count, cursor):
+	def get_latest(cls, guestbookName, count, cursor):
 		"""
  
 		 :type cls: Greeting
 		 """
 		curs = Cursor(urlsafe=cursor)
-		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(
+		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbookName)).order(
 			-Greeting.date).fetch_page(
 			count, start_cursor=curs)
 		return greets, next_curs, more
 
 	@classmethod
-	def get_greeting(cls, guestbook_name, greeting_id):
+	def get_greeting(cls, guestbookName, greeting_id):
 		return cls.query(
-			cls.key == ndb.Key("GuestBook", str(guestbook_name), "Greeting",
-								int(greeting_id))).get()
+			cls.key == ndb.Key("GuestBook", str(guestbookName), "Greeting",
+							   int(greeting_id))).get()
 
 	@classmethod
 	def put_from_dict(cls, dictionary):
-		guestbook_name = dictionary.get("guestbook_name")
-		if not guestbook_name:
+		guestbookName = dictionary.get("guestbookName")
+		if not guestbookName:
 			return False
 		else:
 			try:
-				if is_exist(guestbook_name) is False:
-					GuestBook.add_guestbook(guestbook_name)
-				greeting = cls(parent=get_guestbook_key(guestbook_name))
+				if is_exist(guestbookName) is False:
+					GuestBook.add_guestbook(guestbookName)
+				greeting = cls(parent=get_guestbook_key(guestbookName))
 				if users.get_current_user():
 					greeting.author = users.get_current_user()
 				greeting.content = dictionary.get("greeting_message")
@@ -115,11 +115,11 @@ class Greeting(ndb.Model):
 		try:
 			greeting_id = dictionary["id"]
 			greeting_content = dictionary["content"]
-			guestbook_name = dictionary["guestbook_name"]
+			guestbookName = dictionary["guestbookName"]
 			updated_by = dictionary['updated_by']
 			greeting = cls.query(
-				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
-				                        int(greeting_id))).get()
+				Greeting.key == ndb.Key("GuestBook", guestbookName, "Greeting",
+										int(greeting_id))).get()
 			greeting.update_by = updated_by
 			greeting.update_date = datetime.datetime.now()
 			greeting.content = greeting_content
@@ -131,9 +131,9 @@ class Greeting(ndb.Model):
 	@classmethod
 	def delete_greeting(cls, dictionary):
 		greeting_id = dictionary.get("id")
-		guestbook_name = dictionary.get("guestbook_name")
+		guestbookName = dictionary.get("guestbookName")
 		try:
-			greeting = cls.query(ndb.Key("GuestBook", guestbook_name, "Greeting",
+			greeting = cls.query(ndb.Key("GuestBook", guestbookName, "Greeting",
 										 int(greeting_id)) == Greeting.key).get()
 			if greeting is None:
 				return False

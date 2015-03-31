@@ -9,8 +9,8 @@ define([
 		target: "/guestbookapp/api/guestbook/{0}/greeting/",
 
 		constructor: function (data) {
-			this.guestbook_name = data.guestbook_name;
-			this.target = lang.replace(this.target, [this.guestbook_name]);
+			this.guestbookName = data.guestbookName;
+			this.target = lang.replace(this.target, [this.guestbookName]);
 			var GuestbookJsonRestStore = new JsonRest(
 				{ target: this.target, headers: {"X-CSRFToken": cookie('csrftoken')}}
 			);
