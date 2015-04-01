@@ -1,13 +1,16 @@
 <div>
 	<div>
 		<span>Guestbook name: </span>
-		<input data-dojo-attach-point="guestbookNameTextbox" id="guestbook" data-dojo-type="dijit/form/TextBox" value="${guestbook_name}" required="true" />
+		<input data-dojo-attach-point="guestbookNameTextbox" data-dojo-type="dijit/form/TextBox" value="${guestbook_name}" required="true" />
 
 		<button data-dojo-attach-point="getListButton" data-dojo-type="dijit/form/Button" >Get List of Greeting</button>
-		<span data-dojo-attach-point="deleteDivNode" style="display: None"><button data-dojo-attach-point="deleteAllButton"   data-dojo-type="dijit/form/Button" type="button" >Delete All</button></span>
+		<span data-dojo-attach-point="deleteDivNode" style="display: None">
+			<button data-dojo-attach-point="deleteAllButton"   data-dojo-type="dijit/form/Button" type="button" >Delete All</button>
+		</span>
 		<button data-dojo-attach-point="showSignButton" data-dojo-type="dijit/form/Button" type="button">
 			Sign new Greeting</button>
-			<span data-dojo-attach-point="signOptionNode" style="display: None"><input data-dojo-attach-point="contentSignTextbox" data-dojo-type="dijit/form/TextBox" />
+			<span data-dojo-attach-point="signOptionNode" style="display: None">
+				<input data-dojo-attach-point="contentSignTextbox" data-dojo-type="dijit/form/TextBox" />
 			<button data-dojo-attach-point="signButton" data-dojo-type="dijit/form/Button" type="submit">OK</button>
 			<button data-dojo-attach-point="cancelButton" data-dojo-type="dijit/form/Button">Cancel</button></span>
 	</div>

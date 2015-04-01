@@ -74,7 +74,7 @@ define([
 				greeting_message: this.contentEditbox.get('value')
 			}
 			this.guestbookStore.putGreeting(putData).then(lang.hitch(this, function(){
-				this.guestbookWidget.getList();
+				this.guestbookWidget.refreshList();
 			}));
 
 		}

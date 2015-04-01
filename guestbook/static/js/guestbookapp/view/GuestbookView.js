@@ -39,7 +39,7 @@ define([
 			this.getList();
 
 			this.own(
-				on(this.getListButton, "click", lang.hitch(this, "getList")),
+				on(this.getListButton, "click", lang.hitch(this, "refreshList")),
 				on(this.signButton, "click", lang.hitch(this, "sign")),
 				on(this.showSignButton, "click", lang.hitch(this, "showSign")),
 				on(this.deleteAllButton, "click", lang.hitch(this, "deleteAll")),
@@ -47,12 +47,16 @@ define([
 			);
 		},
 
-		getList: function() {
+		refreshList: function() {
 			dojo.query('.greetingWidget').forEach(function(node){
-				dijit.byNode(node).destroyRecursive(); // destroy ID
-				domConstruct.destroy(node); // destroy innerHTML
+				dijit.byNode(node).destroyRecursive();
+				domConstruct.destroy(node);
 			});
-			var guestbook_name = dijit.byId('guestbook').get('value');
+			this.getList();
+		},
+
+		getList: function() {
+			var guestbook_name = this.guestbookNameTextbox.get('value');
 			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
 				var list = result['object_list']['greetings'];
@@ -72,14 +76,15 @@ define([
 						}
 						var widget = new GreetingView(data);
 						widget.placeAt(domFrag);
-						widget.startup();
-						console.log(this.greetings);
 					}));
 					if(config.isAdmin == "True") {
 						dojo.style(this.deleteDivNode, 'display', '');
 					}
 				}
 				domConstruct.place(domFrag, greetings);
+				dojo.query('.greetingWidget').forEach(function(node){
+					dijit.byNode(node).startup();
+				});
 			}));
 
 		},
@@ -98,7 +103,7 @@ define([
 				greeting_message: this.contentSignTextbox.get('value')
 			}
 			this.guestbookStore.signGreeting(postData).then(lang.hitch(this, function(){
-				this.getList();
+				this.refreshList();
 			}));
 			dojo.style(this.signOptionNode, 'display', 'None');
 
