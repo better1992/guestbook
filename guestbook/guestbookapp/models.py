@@ -113,10 +113,10 @@ class Greeting(ndb.Model):
 	@classmethod
 	def edit_greeting(cls, dictionary):
 		try:
-			greeting_id = dictionary["id"]
-			greeting_content = dictionary["content"]
+			greeting_id = dictionary["greeting_id"]
+			greeting_content = dictionary["greeting_message"]
 			guestbook_name = dictionary["guestbook_name"]
-			updated_by = dictionary['updated_by']
+			updated_by = users.get_current_user().email()
 			greeting = cls.query(
 				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
 										int(greeting_id))).get()

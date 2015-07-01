@@ -116,8 +116,8 @@ class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
 
 		dict_parameter = {
 			'guestbook_name': self.kwargs.get("guestbook_name"),
-			'id': self.kwargs.get("id"),
-			'content': request.PUT.get("greeting_message"),
+			'greeting_id': self.kwargs.get("id"),
+			'greeting_message': request.PUT.get("greeting_message"),
 			'updated_by': request.PUT.get('updated_by'),
 		}
 

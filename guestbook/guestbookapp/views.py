@@ -4,6 +4,7 @@ from django.views.generic.edit import FormView
 from django import forms
 from django.core.context_processors import csrf
 from django.template import RequestContext
+import logging
 
 from google.appengine.api import users
 
@@ -15,7 +16,7 @@ class MainView(TemplateView):
 
 	def get_context_data(self):
 		guestbook_name = self.request.GET.get('guestbook_name',
-											  AppConstants().get_default_guestbook_name)
+											AppConstants().get_default_guestbook_name)
 		cursor = self.request.GET.get("cursor", None)
 		greetings, next_cursor, more = Greeting.get_latest(guestbook_name, 20, cursor)
 
@@ -43,7 +44,7 @@ class SignForm(forms.Form):
 		label="Guestbook Name",
 		max_length=10,
 		required=True,
-		widget=forms.TextInput()
+		widget=forms.TextInput(attrs={'value': AppConstants().get_default_guestbook_name})
 	)
 	greeting_message = forms.CharField(
 		label="Greeting Massage",
@@ -64,7 +65,7 @@ class SignView(FormView):
 			return redirect("/?guestbook_name=" + guestbook_name)
 		else:
 			return render_to_response(self.template_name, {'error': 'Have something wrong!'},
-									  RequestContext(self.request))
+									RequestContext(self.request))
 
 
 class GreetingEditView(FormView):
@@ -77,7 +78,7 @@ class GreetingEditView(FormView):
 		greeting_id = self.request.GET.get("id")
 		guestbook_name = self.request.GET.get("guestbook_name")
 		if guestbook_name:
-			greeting = Greeting.get_greeting(guestbook_name, greeting_id)
+			greeting = Greeting.get_greeting(guestbook_name, int(greeting_id))
 			initial["guestbook_name"] = guestbook_name
 			initial["greeting_message"] = greeting.content
 			try:
@@ -92,8 +93,8 @@ class GreetingEditView(FormView):
 			return redirect("/?guestbook_name=" + guestbook_name)
 		else:
 			return render_to_response(self.template_name,
-									  {'error': 'Have something wrong!'},
-									  RequestContext(self.request))
+									{'error': 'Have something wrong!'},
+									RequestContext(self.request))
 
 
 class GreetingDeleteView(View):
@@ -101,11 +102,11 @@ class GreetingDeleteView(View):
 		dictionary = request.GET
 		guestbook_name = dictionary.get("guestbook_name")
 		if Greeting.delete_greeting(dictionary):
+			return redirect("/?guestbook_name=" + guestbook_name)
+		else:
 			return render_to_response('main_page.html',
 									  {'error': 'Have something wrong!'},
 									  RequestContext(self.request))
-		else:
-			return redirect("/?guestbook_name=" + guestbook_name)
 
 
 class DojoView(TemplateView):
