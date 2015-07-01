@@ -1,15 +1,13 @@
 import json
-import datetime
+
 from django.http import HttpResponse
 from django.views.generic import FormView
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
 from django.http import Http404, QueryDict
 
-from google.appengine.api import users
-
 from models import Greeting
-from views import SignForm
+
 
 class JSONResponseMixin(object):
 	def render_to_response(self, context, **response_kwargs):
@@ -70,22 +68,6 @@ class GreetingService(JSONResponseMixin, BaseListView, FormView):
 			return HttpResponse(status=204)
 		else:
 			return HttpResponse(status=404)
-
-	# @staticmethod
-	# def form_valid(form):
-	# 	guestbook_name = form.cleaned_data.get('guestbook_name')
-	# 	dict_parameter = {
-	# 		'guestbook_name': guestbook_name,
-	# 		'greeting_message': form.cleaned_data.get('greeting_message')
-	# 	}
-	# 	if Greeting.put_from_dict(dict_parameter):
-	# 		return HttpResponse(status=204)
-	# 	else:
-	# 		return HttpResponse(status=404)
-	#
-	# @staticmethod
-	# def form_invalid():
-	# 	return HttpResponse(status=400)
 
 
 class GreetingManageService(JSONResponseMixin, BaseDetailView, FormView):
