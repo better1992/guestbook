@@ -1,4 +1,6 @@
 import datetime
+from functools import wraps
+from time import sleep
 
 from google.appengine.ext import ndb
 from google.appengine.api import datastore_errors
@@ -167,8 +169,9 @@ class Greeting(ndb.Model):
 			return False
 
 	@classmethod
-	def retry(cls, function, tries=3):
-		def retry_function(*args, **kwargs):
+	def retry(cls, function, tries=3, backoff=1):
+		@wraps(function)
+		def wrapper(*args, **kwargs):
 			count_tries = int(tries) - 1
 			while True:
 				try:
@@ -177,6 +180,7 @@ class Greeting(ndb.Model):
 					if not count_tries:
 						break
 					count_tries -= 1
-		return retry_function
+					sleep(backoff)
+		return wrapper
 
 
