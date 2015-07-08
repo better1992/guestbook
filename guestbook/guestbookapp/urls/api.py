@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
-from views import MainView, SignView, GreetingEditView, GreetingDeleteView, DojoView
-from api import GreetingService, GreetingManageService
-from django.views.generic import TemplateView
+from guestbookapp.views import MainView, SignView, \
+	GreetingEditView, GreetingDeleteView, DojoView
+from guestbookapp.api import GreetingCollectionView, GreetingSingleView
 
 
 urlpatterns = patterns("",
@@ -10,8 +10,8 @@ urlpatterns = patterns("",
 					url(r"^edit/$", GreetingEditView.as_view(), name='edit'),
 					url(r"^delete/$", GreetingDeleteView.as_view(), name='delete'),
 					url(r'^api/guestbook/(?P<guestbook_name>[a-zA-Z0-9\s\+_]+)/greeting/$',
-						GreetingService.as_view(), name='sign_api'),
+						GreetingCollectionView.as_view(), name='sign_api'),
 					url(r'^api/guestbook/(?P<guestbook_name>(.)+)/greeting/(?P<id>(.)+)$',
-						GreetingManageService.as_view(), name="detail-greeting"),
+						GreetingSingleView.as_view(), name="detail-greeting"),
 					url(r'^dojo/?$', DojoView.as_view())
 )
