@@ -1,5 +1,9 @@
 import datetime
+from functools import wraps
+from time import sleep
+
 from google.appengine.ext import ndb
+from google.appengine.api import datastore_errors
 from google.appengine.api import users
 from google.appengine.datastore.datastore_query import Cursor
 from google.appengine.ext.db import Error
@@ -30,7 +34,11 @@ class GuestBook(ndb.Model):
 		try:
 			guestbook = GuestBook()
 			guestbook.name = guestbook_name
-			guestbook.put()
+
+			def txn():
+				guestbook.put()
+
+			ndb.transaction(txn)
 			return True
 		except (RuntimeError, TypeError):
 			return False
@@ -67,15 +75,14 @@ class Greeting(ndb.Model):
 		 """
 		curs = Cursor(urlsafe=cursor)
 		greets, next_curs, more = cls.query(ancestor=get_guestbook_key(guestbook_name)).order(
-			-Greeting.date).fetch_page(
-			count, start_cursor=curs)
+			-Greeting.date).fetch_page(count, start_cursor=curs)
 		return greets, next_curs, more
 
 	@classmethod
 	def get_greeting(cls, guestbook_name, greeting_id):
 		return cls.query(
 			cls.key == ndb.Key("GuestBook", str(guestbook_name), "Greeting",
-							   int(greeting_id))).get()
+							int(greeting_id))).get()
 
 	@classmethod
 	def put_from_dict(cls, dictionary):
@@ -90,9 +97,17 @@ class Greeting(ndb.Model):
 				if users.get_current_user():
 					greeting.author = users.get_current_user()
 				greeting.content = dictionary.get("greeting_message")
-				greeting.put()
+
+				@ndb.transactional
+				@cls.retry
+				def txn(ent):
+					if ent:
+						ent.put()
+					return ent
+
+				greeting = txn(greeting)
 				return greeting
-			except Error:
+			except Error, ValueError:
 				return None
 
 	def to_dict(self):
@@ -123,7 +138,14 @@ class Greeting(ndb.Model):
 			greeting.update_by = updated_by
 			greeting.update_date = datetime.datetime.now()
 			greeting.content = greeting_content
-			greeting.put()
+
+			@ndb.transactional
+			@cls.retry
+			def txn(ent):
+				ent.put()
+				return ent
+
+			greeting = txn(greeting)
 			return greeting
 		except Error, ValueError:
 			return None
@@ -134,11 +156,31 @@ class Greeting(ndb.Model):
 		guestbook_name = dictionary.get("guestbook_name")
 		try:
 			greeting = cls.query(ndb.Key("GuestBook", guestbook_name, "Greeting",
-										 int(greeting_id)) == Greeting.key).get()
-			if greeting is None:
-				return False
-			else:
-				greeting.key.delete()
+										int(greeting_id)) == Greeting.key).get()
+
+			@ndb.transactional
+			@cls.retry
+			def txn(key):
+				key.delete()
 				return True
+
+			return txn(greeting.key)
 		except Error:
 			return False
+
+	@classmethod
+	def retry(cls, function, tries=3, backoff=1):
+		@wraps(function)
+		def wrapper(*args, **kwargs):
+			count_tries = int(tries) - 1
+			while True:
+				try:
+					return function(*args, **kwargs)
+				except datastore_errors.Timeout:
+					if not count_tries:
+						break
+					count_tries -= 1
+					sleep(backoff)
+		return wrapper
+
+
