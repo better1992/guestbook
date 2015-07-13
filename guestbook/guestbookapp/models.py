@@ -131,7 +131,7 @@ class Greeting(ndb.Model):
 			greeting_id = dictionary["greeting_id"]
 			greeting_content = dictionary["greeting_message"]
 			guestbook_name = dictionary["guestbook_name"]
-			updated_by = users.get_current_user().email()
+			updated_by = users.get_current_user().email() if users.get_current_user() else None
 			greeting = cls.query(
 				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
 										int(greeting_id))).get()

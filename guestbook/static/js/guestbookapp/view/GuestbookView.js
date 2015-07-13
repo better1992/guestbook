@@ -56,6 +56,10 @@ define([
 		},
 
 		getList: function() {
+			if(!this.guestbookNameTextbox.validate()) {
+				alert('Form contains invalid data. Please correct first');
+				return false;
+			}
 			var guestbook_name = this.guestbookNameTextbox.get('value');
 			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
@@ -98,6 +102,10 @@ define([
 		},
 
 		sign: function() {
+			if(!this.guestbookNameTextbox.validate() || !this.contentSignTextbox.validate()) {
+				alert('Form contains invalid data. Please correct first');
+				return false;
+			}
 			postData = {
 				guestbook_name: this.guestbookNameTextbox.get('value'),
 				greeting_message: this.contentSignTextbox.get('value')
@@ -106,7 +114,6 @@ define([
 				this.refreshList();
 			}));
 			dojo.style(this.signOptionNode, 'display', 'None');
-
 		},
 
 		deleteAll: function() {

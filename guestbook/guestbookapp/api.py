@@ -4,6 +4,7 @@ from django.http import HttpResponse, QueryDict
 from django.views.generic import FormView
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
+from django import forms
 
 from services import GreetingService
 
@@ -20,6 +21,7 @@ class JSONResponseMixin(object):
 
 
 class GreetingCollectionView(JSONResponseMixin, BaseListView, FormView):
+
 	# handle GET request: get list messages and return as JSON
 	def get_queryset(self):
 		cursor = self.request.GET.get("cursor", None)
@@ -36,8 +38,14 @@ class GreetingCollectionView(JSONResponseMixin, BaseListView, FormView):
 		else:
 			# valid json
 			request.POST = json_object
+
 		content = request.POST.get('greeting_message')
 		guestbook_name = kwargs.get('guestbook_name')
+
+		form = self.get_form(self.form_class)
+		if not form.is_valid():
+			return HttpResponse(status=400)
+
 		return GreetingService.create(guestbook_name=guestbook_name, content=content)
 
 
@@ -57,7 +65,7 @@ class GreetingSingleView(JSONResponseMixin, BaseDetailView, FormView):
 			request.PUT = QueryDict(request.body)
 		else:
 			# valid json
-			request.PUT = json.loads(request.body)
+			request.PUT = json_object
 		guestbook_name = kwargs.get("guestbook_name")
 		greeting_id = kwargs.get("id")
 		content = request.PUT.get("greeting_message")
