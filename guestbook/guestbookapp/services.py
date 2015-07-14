@@ -12,7 +12,6 @@ class GreetingService(object):
 	# handle GET request: get list messages and return as JSON
 	@classmethod
 	def list(cls, guestbook_name=GUESTBOOK_NAME, limit=10, cursor=None, **kwargs):
-
 		greetings, next_cursor, more = Greeting.get_latest(guestbook_name, limit, cursor)
 		if greetings is None:
 			return HttpResponse(status=404)
@@ -61,12 +60,13 @@ class GreetingService(object):
 
 	# handle PUT request: Edit a message and return HttpStatus code
 	@classmethod
-	def update(cls, guestbook_name=GUESTBOOK_NAME, pk=None, content=None, **kwargs):
+	def update(cls, user=None, guestbook_name=GUESTBOOK_NAME, pk=None, content=None, **kwargs):
 
 		dict_parameter = {
 			'guestbook_name': guestbook_name,
 			'greeting_id': pk,
 			'greeting_message': content,
+			'updated_by': user
 		}
 
 		if Greeting.edit_greeting(dict_parameter):

@@ -11,6 +11,11 @@ from google.appengine.ext.db import Error
 # entity group. Queries across the single entity group will be consistent.
 # However, the write rate should be limited to ~1/second.
 
+_RETRY_ERRORS = (
+	datastore_errors.Timeout,
+	datastore_errors.InternalError,
+	datastore_errors.TransactionFailedError
+)
 
 class AppConstants(object):
 	@property
@@ -99,7 +104,7 @@ class Greeting(ndb.Model):
 				greeting.content = dictionary.get("greeting_message")
 
 				@ndb.transactional
-				@cls.retry
+				@retry(_RETRY_ERRORS)
 				def txn(ent):
 					if ent:
 						ent.put()
@@ -131,7 +136,7 @@ class Greeting(ndb.Model):
 			greeting_id = dictionary["greeting_id"]
 			greeting_content = dictionary["greeting_message"]
 			guestbook_name = dictionary["guestbook_name"]
-			updated_by = users.get_current_user().email() if users.get_current_user() else None
+			updated_by = dictionary['updated_by']
 			greeting = cls.query(
 				Greeting.key == ndb.Key("GuestBook", guestbook_name, "Greeting",
 										int(greeting_id))).get()
@@ -140,7 +145,7 @@ class Greeting(ndb.Model):
 			greeting.content = greeting_content
 
 			@ndb.transactional
-			@cls.retry
+			@retry(_RETRY_ERRORS)
 			def txn(ent):
 				ent.put()
 				return ent
@@ -159,7 +164,7 @@ class Greeting(ndb.Model):
 										int(greeting_id)) == Greeting.key).get()
 
 			@ndb.transactional
-			@cls.retry
+			@retry(_RETRY_ERRORS)
 			def txn(key):
 				key.delete()
 				return True
@@ -168,19 +173,20 @@ class Greeting(ndb.Model):
 		except Error:
 			return False
 
-	@classmethod
-	def retry(cls, function, tries=3, backoff=1):
+
+def retry(exc_types, tries=3, backoff=1):
+	def wrapper(function):
 		@wraps(function)
-		def wrapper(*args, **kwargs):
+		def wrapped(*args, **kwargs):
 			count_tries = int(tries) - 1
 			while True:
 				try:
 					return function(*args, **kwargs)
-				except datastore_errors.Timeout:
+				except exc_types:
 					if not count_tries:
 						break
 					count_tries -= 1
 					sleep(backoff)
-		return wrapper
-
+		return wrapped
+	return wrapper
 

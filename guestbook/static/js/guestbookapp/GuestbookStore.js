@@ -10,14 +10,16 @@ define([
 
 		constructor: function (data) {
 			this.guestbook_name = data.guestbook_name;
-			this.target = lang.replace(this.target, [this.guestbook_name]);
+			target = lang.replace(this.target, [this.guestbook_name]);
 			var GuestbookJsonRestStore = new JsonRest(
-				{ target: this.target, headers: {"X-CSRFToken": cookie('csrftoken')}}
+				{ target: target, headers: {"X-CSRFToken": cookie('csrftoken')}}
 			);
 			this.guestbookStore = GuestbookJsonRestStore;
 		},
 
-		getGreetings: function() {
+		getGreetings: function(data) {
+			this.guestbook_name = data.guestbook_name;
+			this.guestbookStore.target = lang.replace(this.target, [this.guestbook_name]);
 			return this.guestbookStore.query();
 		},
 

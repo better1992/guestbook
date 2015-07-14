@@ -18,7 +18,8 @@ define([
 	"dijit/Dialog",
 	"dijit/form/TextBox",
 	"guestbookapp/view/_ViewBaseMixin",
-], function(declare, lang, config, dom, domAttr, domstyle, cookie, when, request, on, Memory, template, validtextbox,
+], function(declare, lang, config, dom, domAttr, domstyle, cookie, when,
+			request, on, Memory, template, validtextbox,
 			button, form, inlineEditbox, dialog, textbox, _ViewBaseMixin){
 	return declare("greetingWidget",[_ViewBaseMixin], {
 		//	set our template
@@ -63,7 +64,6 @@ define([
 		deleteWidget: function(){
 			this.guestbookStore.deleteGreeting(this.id);
 			this.destroyRecursive();
-
 		},
 
 		okEdit : function() {

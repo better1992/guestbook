@@ -11,9 +11,11 @@ class SignForm(forms.Form, BaseForm):
 		required=True,
 		widget=forms.TextInput(attrs={'value': AppConstants().get_default_guestbook_name})
 	)
+	id = forms.CharField(required=False)
 	greeting_message = forms.CharField(
 		label="Greeting Massage",
 		max_length=10,
-		required=True,
+		required=False,
 		widget=forms.TextInput()
 	)
+	updated_by = forms.CharField(required=False)

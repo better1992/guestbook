@@ -17,7 +17,8 @@ define([
 	"guestbookapp/view/GreetingView",
 	"guestbookapp/view/_ViewBaseMixin",
 	"dojo/domReady!"
-], function(declare, lang, array, config, dom, domConstruct, on, template, contentpane,  validtextbox, button, form,
+], function(declare, lang, array, config, dom, domConstruct, on, template,
+			contentpane, validtextbox, button, form,
 			dialog, textbox, GuestbookStore, GreetingView, _ViewBaseMixin){
 	return declare('guestbookWidget', [_ViewBaseMixin], {
 		//	set our template
@@ -61,7 +62,8 @@ define([
 				return false;
 			}
 			var guestbook_name = this.guestbookNameTextbox.get('value');
-			this.guestbookStore.getGreetings().then(lang.hitch(this, function(result){
+			this.guestbookStore.getGreetings({'guestbook_name': guestbook_name}).then(
+				lang.hitch(this, function(result){
 				var greetings = dom.byId('greetingContainer');
 				var list = result['object_list']['greetings'];
 				var domFrag = document.createDocumentFragment();
